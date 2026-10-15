@@ -28,6 +28,8 @@ import reportRoutes from './routes/reportRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { ensureDeveloperAndDefaultAccounts } from './controllers/authController.js';
+import { protect, enforceTenantIsolation } from './middlewares/authMiddleware.js';
+import { apiRateLimiter } from './middlewares/rateLimiter.js';
 
 // Load environment variables
 dotenv.config();
@@ -79,21 +81,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes
-app.use('/api/admissions', admissionRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/staff', staffRoutes);
-app.use('/api/classes', classRoutes);
-app.use('/api/attendance', attendanceRoutes);
-app.use('/api/fees', feeRoutes);
-app.use('/api/salary', salaryRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/exams', examRoutes);
-app.use('/api/school-profile', schoolProfileRoutes);
-app.use('/api/sessions', sessionRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+// General API rate limiter (protects server from floods/scrapers)
+app.use('/api/', apiRateLimiter);
+
+// Public / Semi-Public Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/school-profile', schoolProfileRoutes);
+
+// Strictly Protected Multi-Tenant Business API Routes (Enforces Login & School Data Isolation)
+app.use('/api/admissions', protect, enforceTenantIsolation, admissionRoutes);
+app.use('/api/students', protect, enforceTenantIsolation, studentRoutes);
+app.use('/api/staff', protect, enforceTenantIsolation, staffRoutes);
+app.use('/api/classes', protect, enforceTenantIsolation, classRoutes);
+app.use('/api/attendance', protect, enforceTenantIsolation, attendanceRoutes);
+app.use('/api/fees', protect, enforceTenantIsolation, feeRoutes);
+app.use('/api/salary', protect, enforceTenantIsolation, salaryRoutes);
+app.use('/api/expenses', protect, enforceTenantIsolation, expenseRoutes);
+app.use('/api/exams', protect, enforceTenantIsolation, examRoutes);
+app.use('/api/sessions', protect, enforceTenantIsolation, sessionRoutes);
+app.use('/api/reports', protect, enforceTenantIsolation, reportRoutes);
+app.use('/api/dashboard', protect, enforceTenantIsolation, dashboardRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

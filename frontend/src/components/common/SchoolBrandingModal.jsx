@@ -16,6 +16,7 @@ import {
   MapPin,
   Award,
   Trash2,
+  FileSignature,
 } from 'lucide-react';
 
 export default function SchoolBrandingModal({ isOpen, onClose }) {
@@ -31,6 +32,7 @@ export default function SchoolBrandingModal({ isOpen, onClose }) {
     affiliation: '',
     principalTitle: 'Principal',
     logoUrl: '',
+    principalSignatureUrl: '',
     activeSession: '2025-2026',
   });
 
@@ -51,6 +53,7 @@ export default function SchoolBrandingModal({ isOpen, onClose }) {
         affiliation: schoolProfile.affiliation || '',
         principalTitle: schoolProfile.principalTitle || 'Principal',
         logoUrl: schoolProfile.logoUrl || '',
+        principalSignatureUrl: schoolProfile.principalSignatureUrl || '',
         activeSession: schoolProfile.activeSession || '2025-2026',
       });
     } else if (schoolCode) {
@@ -96,6 +99,36 @@ export default function SchoolBrandingModal({ isOpen, onClose }) {
 
   const handleRemoveLogo = () => {
     setFormData((prev) => ({ ...prev, logoUrl: '' }));
+  };
+
+  // Convert uploaded principal signature image file to Base64
+  const handleSignatureUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Signature file size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData((prev) => ({ ...prev, principalSignatureUrl: reader.result }));
+      setErrorMsg('');
+    };
+    reader.onerror = () => {
+      setErrorMsg('Failed to process signature image file.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveSignature = () => {
+    setFormData((prev) => ({ ...prev, principalSignatureUrl: '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -221,6 +254,79 @@ export default function SchoolBrandingModal({ isOpen, onClose }) {
                 </div>
                 <p className="text-[10px] text-slate-500 leading-relaxed">
                   Upload your school's PNG, JPG or SVG logo. If no image is uploaded, an ultra-luxurious collegiate heraldic crest with your school's initials will be automatically generated.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Principal Signature Upload & Live Preview Card */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+            <label className="block text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+              <FileSignature className="w-4 h-4 text-amber-600" />
+              <span>Official Principal / Authority Signature Picture</span>
+            </label>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {/* Signature Preview Box */}
+              <div className="w-36 h-20 rounded-xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center overflow-hidden shrink-0 shadow-inner p-2 relative group">
+                {formData.principalSignatureUrl ? (
+                  <>
+                    <img
+                      src={formData.principalSignatureUrl}
+                      alt="Principal Signature Preview"
+                      className="max-h-11 max-w-full object-contain filter contrast-125"
+                    />
+                    <div className="w-20 h-0.5 bg-slate-300 rounded mt-1"></div>
+                    <span className="text-[7px] text-slate-400 uppercase font-black tracking-wider block mt-0.5">
+                      {formData.principalTitle || 'Principal'} Sign
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleRemoveSignature}
+                      className="absolute inset-0 bg-slate-950/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                      title="Remove Signature"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-400" />
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <span className="font-serif italic text-sm text-slate-400 block">
+                      {formData.principalTitle || 'Principal'}
+                    </span>
+                    <div className="w-16 h-0.5 bg-slate-200 rounded mx-auto mt-0.5"></div>
+                    <span className="text-[7.5px] font-bold text-slate-400 block mt-0.5">
+                      No Signature File
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex-1 w-full space-y-2">
+                <div className="flex items-center gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition shadow-xs">
+                    <Upload className="w-4 h-4 text-amber-600" />
+                    <span>Upload Signature Picture</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleSignatureUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {formData.principalSignatureUrl && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveSignature}
+                      className="px-3 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove</span>
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 leading-relaxed">
+                  Recommended: Clean PNG or JPG photo of Principal signature. Will automatically appear on all Student ID Cards, Admission Cards, and Official Vouchers.
                 </p>
               </div>
             </div>

@@ -140,7 +140,7 @@ export default function StudentPromotion({ schoolCode }) {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Header Banner */}
       <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -173,7 +173,7 @@ export default function StudentPromotion({ schoolCode }) {
           Promotion Route & Target Parameters
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-center text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-center text-xs">
           {/* FROM CLASS */}
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
             <span className="font-bold text-slate-500 uppercase text-[10px] block">1. Promote From:</span>

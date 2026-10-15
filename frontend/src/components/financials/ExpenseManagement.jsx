@@ -246,7 +246,7 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -294,7 +294,7 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
 
       {/* 2. KPI Summary Cards */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">

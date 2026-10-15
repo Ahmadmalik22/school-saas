@@ -233,7 +233,7 @@ export default function PrintReportCards({ schoolCode }) {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="w-full max-w-[1800px] mx-auto pb-12 space-y-6">
       {/* Screen Controls Header (Hidden in Print) */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 print:hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
@@ -430,7 +430,7 @@ export default function PrintReportCards({ schoolCode }) {
             <div
               key={rc.studentId || cardIdx}
               id={`report-card-${rc.studentId}`}
-              className="bg-white p-6 md:p-10 rounded-xl shadow-sm border border-slate-300 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:page-break relative"
+              className="bg-white p-4 sm:p-6 md:p-10 rounded-xl shadow-sm border border-slate-300 max-w-4xl mx-auto overflow-x-auto print:overflow-visible print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:page-break relative"
               style={{ pageBreakAfter: 'always' }}
             >
               {/* Single Student Download PDF Button (Screen only) */}
@@ -449,7 +449,7 @@ export default function PrintReportCards({ schoolCode }) {
               {/* Inner Official Card (Rendered to PDF / Printed) */}
               <div
                 id={`report-card-inner-${rc.studentId}`}
-                className="report-card-inner-node border-[3px] border-slate-900 p-6 md:p-8 rounded-lg relative min-h-[920px] flex flex-col justify-between bg-white text-slate-900"
+                className="report-card-inner-node border-[3px] border-slate-900 p-5 sm:p-6 md:p-8 rounded-lg relative min-h-[920px] min-w-[580px] md:min-w-0 flex flex-col justify-between bg-white text-slate-900"
               >
                 <div>
                   {/* Header: Dynamic School Logo, Dynamic Name & Title from logged-in school profile */}

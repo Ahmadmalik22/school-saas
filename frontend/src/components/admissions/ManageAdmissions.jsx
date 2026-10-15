@@ -235,7 +235,7 @@ export default function ManageAdmissions({ schoolCode }) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-16">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6 pb-16">
       {/* Alert Notification */}
       {alertMsg && (
         <div
@@ -279,7 +279,7 @@ export default function ManageAdmissions({ schoolCode }) {
 
       {/* Filters Bar */}
       <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
           {/* Class Filter */}
           <div>
             <label className="block font-bold text-slate-700 mb-1">Class</label>

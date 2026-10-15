@@ -175,7 +175,7 @@ export default function StaffAttendance({ schoolCode, setActiveSubModule }) {
   const totalStaff = records.length;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5">
+    <div className="w-full max-w-[1800px] mx-auto space-y-5">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -242,7 +242,7 @@ export default function StaffAttendance({ schoolCode, setActiveSubModule }) {
       </div>
 
       {/* Top Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-3 items-end text-xs">
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end text-xs">
         <div>
           <label className="block font-bold text-slate-700 mb-1">Attendance Date</label>
           <div className="relative">

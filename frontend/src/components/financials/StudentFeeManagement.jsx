@@ -294,7 +294,7 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
       {activeTab === 'counter' && (
         <div className="space-y-6">
           {/* Top Filter Bar */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-3 items-end text-xs">
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end text-xs">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Class</label>
               <select
@@ -357,7 +357,7 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
 
           {/* Quick Metrics */}
           {stats && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Total Receivables

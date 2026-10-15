@@ -262,7 +262,7 @@ export default function ExamMarksEntry({ schoolCode }) {
   });
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="w-full max-w-[1800px] mx-auto pb-12 space-y-6">
       {/* Top Controls Card */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">

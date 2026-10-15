@@ -90,3 +90,53 @@ export const requirePermission = (permissionKeyOrArray) => {
 };
 
 export const requireModule = requirePermission;
+
+/**
+ * Enforce Multi-Tenant Data Isolation:
+ * Prevents any school user from accessing or modifying another school's data.
+ * - If user is SUPER_ADMIN: Can access any school.
+ * - If user is regular school user (ADMIN, ACCOUNTANT, TEACHER, CLERK):
+ *   Locks req.query.schoolCode and req.body.schoolCode strictly to req.user.schoolCode!
+ *   If they maliciously try to pass a different schoolCode, the request is rejected with 403 Forbidden!
+ */
+export const enforceTenantIsolation = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: 'Authentication required for tenant isolation.' });
+  }
+
+  // Developer / Super Admin has cross-tenant rights
+  if (req.user.role === 'SUPER_ADMIN') {
+    return next();
+  }
+
+  const userSchool = (req.user.schoolCode || '').toUpperCase().trim();
+
+  // Check query param
+  if (req.query && req.query.schoolCode) {
+    const requestedCode = req.query.schoolCode.toUpperCase().trim();
+    if (requestedCode !== userSchool) {
+      return res.status(403).json({
+        success: false,
+        message: `Security Alert: Access denied. You cannot access data for school [${requestedCode}]. Your authorized school is [${userSchool}].`,
+      });
+    }
+  }
+
+  // Check body param
+  if (req.body && req.body.schoolCode) {
+    const requestedCode = req.body.schoolCode.toUpperCase().trim();
+    if (requestedCode !== userSchool) {
+      return res.status(403).json({
+        success: false,
+        message: `Security Alert: Action denied. You cannot modify records for school [${requestedCode}]. Your authorized school is [${userSchool}].`,
+      });
+    }
+  }
+
+  // Auto-bind req.schoolCode, req.query, and req.body to their authorized schoolCode
+  req.schoolCode = userSchool;
+  if (req.query) req.query.schoolCode = userSchool;
+  if (req.body && typeof req.body === 'object') req.body.schoolCode = userSchool;
+
+  next();
+};

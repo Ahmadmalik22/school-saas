@@ -147,7 +147,7 @@ export default function StudentInformation({ schoolCode }) {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Header Banner */}
       <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -201,7 +201,7 @@ export default function StudentInformation({ schoolCode }) {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
         <div>
           <label className="block font-semibold text-slate-700 mb-1">Class</label>
           <select
@@ -499,7 +499,7 @@ export default function StudentInformation({ schoolCode }) {
                 <h4 className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
                   Agreed Fee Structure & Concession Profile
                 </h4>
-                <div className="grid grid-cols-3 gap-3 bg-amber-50/60 p-3.5 rounded-xl border border-amber-200">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/60 p-3.5 rounded-xl border border-amber-200">
                   <div>
                     <div className="text-[10px] text-amber-800 font-semibold">Monthly Tuition Fee</div>
                     <div className="text-sm font-black text-slate-900">

@@ -55,6 +55,10 @@ const SchoolProfileSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    principalSignatureUrl: {
+      type: String,
+      default: null,
+    },
     activeSession: {
       type: String,
       default: '2025-2026',

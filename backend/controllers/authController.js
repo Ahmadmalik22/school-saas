@@ -244,6 +244,7 @@ export const registerSchool = async (req, res) => {
       adminPassword,
       activeSession = '2025-2026',
       logoUrl,
+      principalSignatureUrl,
     } = req.body;
 
     if (!schoolName || !schoolCode || !adminName || !adminEmail || !adminPassword) {
@@ -277,6 +278,7 @@ export const registerSchool = async (req, res) => {
       activeSession: activeSession.trim(),
       status: 'ACTIVE',
       logoUrl: logoUrl ? logoUrl.trim() : null,
+      principalSignatureUrl: principalSignatureUrl ? principalSignatureUrl.trim() : null,
     });
 
     // 2. Create Primary Admin / Principal User

@@ -302,7 +302,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
   }, [breakdowns.recentAdmissions, modalSearch]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-12">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6 pb-12">
       {/* 1. EXECUTIVE HEADER & CONTROLS */}
       <div className="bg-gradient-to-r from-[#041633] via-[#082046] to-[#0d2f66] rounded-2xl p-6 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -1165,54 +1165,56 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                       </p>
                     </div>
                   ) : (
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                        <tr>
-                          <th className="py-2.5 px-3">Student Name</th>
-                          <th className="py-2.5 px-3">Roll / Class</th>
-                          <th className="py-2.5 px-3">Payment Mode</th>
-                          <th className="py-2.5 px-3">Received By</th>
-                          <th className="py-2.5 px-3">Receipt / Ref</th>
-                          <th className="py-2.5 px-3 text-right">Amount Collected</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                        {filteredFeeList.map((item, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50 transition">
-                            <td className="py-2.5 px-3 font-bold text-slate-900">
-                              {item.studentName}
-                            </td>
-                            <td className="py-2.5 px-3">
-                              <span className="font-semibold text-slate-800">{item.className}</span>
-                              <span className="text-slate-400 ml-1">({item.section})</span>
-                              <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded ml-2">
-                                Roll: {item.rollNumber}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3">
-                              <span
-                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                  item.paymentMethod === 'BANK'
-                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                    : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                }`}
-                              >
-                                {item.paymentMethod || 'CASH'}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-500">
-                              {item.receivedBy || 'Accountant'}
-                            </td>
-                            <td className="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
-                              {item.receiptNo !== '—' ? item.receiptNo : item.voucherNo}
-                            </td>
-                            <td className="py-2.5 px-3 text-right font-black text-emerald-700 text-sm">
-                              {formatAmount(item.paidAmount, isCardMasked('fee'))}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-3">Student Name</th>
+                            <th className="py-2.5 px-3">Roll / Class</th>
+                            <th className="py-2.5 px-3">Payment Mode</th>
+                            <th className="py-2.5 px-3">Received By</th>
+                            <th className="py-2.5 px-3">Receipt / Ref</th>
+                            <th className="py-2.5 px-3 text-right">Amount Collected</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                          {filteredFeeList.map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 transition">
+                              <td className="py-2.5 px-3 font-bold text-slate-900">
+                                {item.studentName}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span className="font-semibold text-slate-800">{item.className}</span>
+                                <span className="text-slate-400 ml-1">({item.section})</span>
+                                <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded ml-2">
+                                  Roll: {item.rollNumber}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    item.paymentMethod === 'BANK'
+                                      ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                      : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                  }`}
+                                >
+                                  {item.paymentMethod || 'CASH'}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-500">
+                                {item.receivedBy || 'Accountant'}
+                              </td>
+                              <td className="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
+                                {item.receiptNo !== '—' ? item.receiptNo : item.voucherNo}
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-black text-emerald-700 text-sm">
+                                {formatAmount(item.paidAmount, isCardMasked('fee'))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               )}
@@ -1229,38 +1231,40 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                       </p>
                     </div>
                   ) : (
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                        <tr>
-                          <th className="py-2.5 px-3">Voucher #</th>
-                          <th className="py-2.5 px-3">Expense Category</th>
-                          <th className="py-2.5 px-3">Description / Remarks</th>
-                          <th className="py-2.5 px-3">Recorded By</th>
-                          <th className="py-2.5 px-3 text-right">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                        {filteredExpensesList.map((item, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50 transition">
-                            <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
-                              {item.voucherNo}
-                            </td>
-                            <td className="py-2.5 px-3 font-bold text-rose-800">
-                              {item.categoryName}
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-600">
-                              {item.remarks || '—'}
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-500">
-                              {item.recordedBy || 'Accountant'}
-                            </td>
-                            <td className="py-2.5 px-3 text-right font-black text-rose-600 text-sm">
-                              {formatAmount(item.amount, isCardMasked('expenses'))}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-3">Voucher #</th>
+                            <th className="py-2.5 px-3">Expense Category</th>
+                            <th className="py-2.5 px-3">Description / Remarks</th>
+                            <th className="py-2.5 px-3">Recorded By</th>
+                            <th className="py-2.5 px-3 text-right">Amount</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                          {filteredExpensesList.map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 transition">
+                              <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
+                                {item.voucherNo}
+                              </td>
+                              <td className="py-2.5 px-3 font-bold text-rose-800">
+                                {item.categoryName}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-600">
+                                {item.remarks || '—'}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-500">
+                                {item.recordedBy || 'Accountant'}
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-black text-rose-600 text-sm">
+                                {formatAmount(item.amount, isCardMasked('expenses'))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               )}
@@ -1289,123 +1293,127 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                             <span className="text-[11px] font-bold">Principal Action Hotline</span>
                           </div>
 
-                          <table className="w-full text-left text-xs">
-                            <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                              <tr>
-                                <th className="py-2.5 px-3">Roll #</th>
-                                <th className="py-2.5 px-3">Student Name</th>
-                                <th className="py-2.5 px-3">Class & Sec</th>
-                                <th className="py-2.5 px-3">Father Name</th>
-                                <th className="py-2.5 px-3">Father Phone</th>
-                                <th className="py-2.5 px-3 text-right">Action</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                              {filteredAbsenteesList.map((item, idx) => (
-                                <tr key={idx} className="hover:bg-rose-50/40 transition">
-                                  <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
-                                    {item.rollNumber}
-                                  </td>
-                                  <td className="py-2.5 px-3 font-bold text-slate-900">
-                                    {item.studentName}
-                                  </td>
-                                  <td className="py-2.5 px-3">
-                                    <span className="font-semibold">{item.className}</span>
-                                    <span className="text-slate-400 ml-1">({item.section})</span>
-                                  </td>
-                                  <td className="py-2.5 px-3 text-slate-600">
-                                    {item.fatherName}
-                                  </td>
-                                  <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">
-                                    {item.fatherPhone || '—'}
-                                  </td>
-                                  <td className="py-2.5 px-3 text-right">
-                                    {item.fatherPhone && item.fatherPhone !== '—' ? (
-                                      <div className="flex items-center justify-end gap-1.5">
-                                        <a
-                                          href={`tel:${item.fatherPhone}`}
-                                          className="p-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-xs font-bold transition flex items-center gap-1"
-                                          title="Call Father"
-                                        >
-                                          <Phone className="w-3.5 h-3.5" />
-                                          <span>Call</span>
-                                        </a>
-                                        <button
-                                          type="button"
-                                          onClick={() => handleCopyPhone(item.fatherPhone)}
-                                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition cursor-pointer"
-                                          title="Copy Phone"
-                                        >
-                                          {copiedPhone === item.fatherPhone ? (
-                                            <span className="text-emerald-600 text-[10px]">Copied!</span>
-                                          ) : (
-                                            <Copy className="w-3.5 h-3.5" />
-                                          )}
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <span className="text-slate-400 text-[10px]">No contact</span>
-                                    )}
-                                  </td>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs">
+                              <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                                <tr>
+                                  <th className="py-2.5 px-3">Roll #</th>
+                                  <th className="py-2.5 px-3">Student Name</th>
+                                  <th className="py-2.5 px-3">Class & Sec</th>
+                                  <th className="py-2.5 px-3">Father Name</th>
+                                  <th className="py-2.5 px-3">Father Phone</th>
+                                  <th className="py-2.5 px-3 text-right">Action</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                                {filteredAbsenteesList.map((item, idx) => (
+                                  <tr key={idx} className="hover:bg-rose-50/40 transition">
+                                    <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
+                                      {item.rollNumber}
+                                    </td>
+                                    <td className="py-2.5 px-3 font-bold text-slate-900">
+                                      {item.studentName}
+                                    </td>
+                                    <td className="py-2.5 px-3">
+                                      <span className="font-semibold">{item.className}</span>
+                                      <span className="text-slate-400 ml-1">({item.section})</span>
+                                    </td>
+                                    <td className="py-2.5 px-3 text-slate-600">
+                                      {item.fatherName}
+                                    </td>
+                                    <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">
+                                      {item.fatherPhone || '—'}
+                                    </td>
+                                    <td className="py-2.5 px-3 text-right">
+                                      {item.fatherPhone && item.fatherPhone !== '—' ? (
+                                        <div className="flex items-center justify-end gap-1.5">
+                                          <a
+                                            href={`tel:${item.fatherPhone}`}
+                                            className="p-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                                            title="Call Father"
+                                          >
+                                            <Phone className="w-3.5 h-3.5" />
+                                            <span>Call</span>
+                                          </a>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleCopyPhone(item.fatherPhone)}
+                                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition cursor-pointer"
+                                            title="Copy Phone"
+                                          >
+                                            {copiedPhone === item.fatherPhone ? (
+                                              <span className="text-emerald-600 text-[10px]">Copied!</span>
+                                            ) : (
+                                              <Copy className="w-3.5 h-3.5" />
+                                            )}
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <span className="text-slate-400 text-[10px]">No contact</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       )}
                     </div>
                   ) : (
                     /* Class Summary Tab */
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                        <tr>
-                          <th className="py-2.5 px-3">Class</th>
-                          <th className="py-2.5 px-3">Section</th>
-                          <th className="py-2.5 px-3 text-center">Enrolled</th>
-                          <th className="py-2.5 px-3 text-center">Present</th>
-                          <th className="py-2.5 px-3 text-center">Absent</th>
-                          <th className="py-2.5 px-3 text-center">Leave</th>
-                          <th className="py-2.5 px-3 text-right">Attendance Rate</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                        {breakdowns.classAttendance?.map((c, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50 transition">
-                            <td className="py-2.5 px-3 font-bold text-slate-900">
-                              {c.className}
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-500">
-                              {c.section}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-bold">
-                              {c.total}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-emerald-600">
-                              {c.present}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-rose-600">
-                              {c.absent}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-amber-600">
-                              {c.leave}
-                            </td>
-                            <td className="py-2.5 px-3 text-right">
-                              <span
-                                className={`font-black text-xs px-2 py-0.5 rounded-full ${
-                                  c.rate >= 90
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : c.rate >= 75
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-rose-100 text-rose-800'
-                                }`}
-                              >
-                                {c.rate}%
-                              </span>
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-3">Class</th>
+                            <th className="py-2.5 px-3">Section</th>
+                            <th className="py-2.5 px-3 text-center">Enrolled</th>
+                            <th className="py-2.5 px-3 text-center">Present</th>
+                            <th className="py-2.5 px-3 text-center">Absent</th>
+                            <th className="py-2.5 px-3 text-center">Leave</th>
+                            <th className="py-2.5 px-3 text-right">Attendance Rate</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                          {breakdowns.classAttendance?.map((c, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 transition">
+                              <td className="py-2.5 px-3 font-bold text-slate-900">
+                                {c.className}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-500">
+                                {c.section}
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-bold">
+                                {c.total}
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-bold text-emerald-600">
+                                {c.present}
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-bold text-rose-600">
+                                {c.absent}
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-bold text-amber-600">
+                                {c.leave}
+                              </td>
+                              <td className="py-2.5 px-3 text-right">
+                                <span
+                                  className={`font-black text-xs px-2 py-0.5 rounded-full ${
+                                    c.rate >= 90
+                                      ? 'bg-emerald-100 text-emerald-800'
+                                      : c.rate >= 75
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : 'bg-rose-100 text-rose-800'
+                                  }`}
+                                >
+                                  {c.rate}%
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               )}
@@ -1422,59 +1430,61 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                       </p>
                     </div>
                   ) : (
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                        <tr>
-                          <th className="py-2.5 px-3">Emp ID</th>
-                          <th className="py-2.5 px-3">Staff Name</th>
-                          <th className="py-2.5 px-3">Role / Department</th>
-                          <th className="py-2.5 px-3 text-center">Status</th>
-                          <th className="py-2.5 px-3 text-center">Time In</th>
-                          <th className="py-2.5 px-3 text-center">Time Out</th>
-                          <th className="py-2.5 px-3">Remarks</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                        {filteredStaffList.map((item, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50 transition">
-                            <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
-                              {item.employeeId}
-                            </td>
-                            <td className="py-2.5 px-3 font-bold text-slate-900">
-                              {item.name}
-                            </td>
-                            <td className="py-2.5 px-3">
-                              <span className="font-semibold text-slate-800">{item.role}</span>
-                              <span className="text-slate-400 text-[10px] ml-1">({item.department})</span>
-                            </td>
-                            <td className="py-2.5 px-3 text-center">
-                              <span
-                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                  item.status === 'PRESENT'
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : item.status === 'ABSENT'
-                                    ? 'bg-rose-100 text-rose-800'
-                                    : item.status === 'LATE'
-                                    ? 'bg-amber-100 text-amber-800'
-                                    : 'bg-blue-100 text-blue-800'
-                                }`}
-                              >
-                                {item.status}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono text-slate-600">
-                              {item.timeIn || '—'}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono text-slate-600">
-                              {item.timeOut || '—'}
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-500">
-                              {item.remarks || '—'}
-                            </td>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-3">Emp ID</th>
+                            <th className="py-2.5 px-3">Staff Name</th>
+                            <th className="py-2.5 px-3">Role / Department</th>
+                            <th className="py-2.5 px-3 text-center">Status</th>
+                            <th className="py-2.5 px-3 text-center">Time In</th>
+                            <th className="py-2.5 px-3 text-center">Time Out</th>
+                            <th className="py-2.5 px-3">Remarks</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                          {filteredStaffList.map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 transition">
+                              <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
+                                {item.employeeId}
+                              </td>
+                              <td className="py-2.5 px-3 font-bold text-slate-900">
+                                {item.name}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span className="font-semibold text-slate-800">{item.role}</span>
+                                <span className="text-slate-400 text-[10px] ml-1">({item.department})</span>
+                              </td>
+                              <td className="py-2.5 px-3 text-center">
+                                <span
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    item.status === 'PRESENT'
+                                      ? 'bg-emerald-100 text-emerald-800'
+                                      : item.status === 'ABSENT'
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : item.status === 'LATE'
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : 'bg-blue-100 text-blue-800'
+                                  }`}
+                                >
+                                  {item.status}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-mono text-slate-600">
+                                {item.timeIn || '—'}
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-mono text-slate-600">
+                                {item.timeOut || '—'}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-500">
+                                {item.remarks || '—'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               )}
@@ -1507,45 +1517,47 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                     Recent Admissions Roster
                   </h4>
 
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                      <tr>
-                        <th className="py-2.5 px-3">Admission #</th>
-                        <th className="py-2.5 px-3">Student Name</th>
-                        <th className="py-2.5 px-3">Father Name</th>
-                        <th className="py-2.5 px-3">Class & Sec</th>
-                        <th className="py-2.5 px-3">Date</th>
-                        <th className="py-2.5 px-3 text-right">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                      {filteredAdmissionsList.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50 transition">
-                          <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
-                            {item.admissionNumber}
-                          </td>
-                          <td className="py-2.5 px-3 font-bold text-slate-900">
-                            {item.fullName}
-                          </td>
-                          <td className="py-2.5 px-3 text-slate-600">
-                            {item.fatherName}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <span className="font-semibold text-slate-800">{item.className}</span>
-                            <span className="text-slate-400 ml-1">({item.section})</span>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-slate-500">
-                            {item.admissionDate}
-                          </td>
-                          <td className="py-2.5 px-3 text-right">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                              {item.status}
-                            </span>
-                          </td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                        <tr>
+                          <th className="py-2.5 px-3">Admission #</th>
+                          <th className="py-2.5 px-3">Student Name</th>
+                          <th className="py-2.5 px-3">Father Name</th>
+                          <th className="py-2.5 px-3">Class & Sec</th>
+                          <th className="py-2.5 px-3">Date</th>
+                          <th className="py-2.5 px-3 text-right">Status</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                        {filteredAdmissionsList.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50 transition">
+                            <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
+                              {item.admissionNumber}
+                            </td>
+                            <td className="py-2.5 px-3 font-bold text-slate-900">
+                              {item.fullName}
+                            </td>
+                            <td className="py-2.5 px-3 text-slate-600">
+                              {item.fatherName}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span className="font-semibold text-slate-800">{item.className}</span>
+                              <span className="text-slate-400 ml-1">({item.section})</span>
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-slate-500">
+                              {item.admissionDate}
+                            </td>
+                            <td className="py-2.5 px-3 text-right">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 
@@ -1571,45 +1583,47 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                         </span>
                       </div>
 
-                      <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
-                          <tr>
-                            <th className="py-2.5 px-3">Roll #</th>
-                            <th className="py-2.5 px-3">Student Name</th>
-                            <th className="py-2.5 px-3">Class & Sec</th>
-                            <th className="py-2.5 px-3">Father Name</th>
-                            <th className="py-2.5 px-3">Overdue Months</th>
-                            <th className="py-2.5 px-3 text-right">Pending Balance</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                          {filteredDefaultersList.map((item, idx) => (
-                            <tr key={idx} className="hover:bg-amber-50/40 transition">
-                              <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
-                                {item.rollNumber}
-                              </td>
-                              <td className="py-2.5 px-3 font-bold text-slate-900">
-                                {item.studentName}
-                              </td>
-                              <td className="py-2.5 px-3">
-                                <span className="font-semibold text-slate-800">{item.className}</span>
-                                <span className="text-slate-400 ml-1">({item.section})</span>
-                              </td>
-                              <td className="py-2.5 px-3 text-slate-600">
-                                {item.fatherName}
-                              </td>
-                              <td className="py-2.5 px-3">
-                                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                                  {item.monthsDueCount} mo: {item.pendingMonthsStr}
-                                </span>
-                              </td>
-                              <td className="py-2.5 px-3 text-right font-black text-rose-700 text-sm">
-                                {formatAmount(item.totalPending, isCardMasked('dues'))}
-                              </td>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider sticky top-0">
+                            <tr>
+                              <th className="py-2.5 px-3">Roll #</th>
+                              <th className="py-2.5 px-3">Student Name</th>
+                              <th className="py-2.5 px-3">Class & Sec</th>
+                              <th className="py-2.5 px-3">Father Name</th>
+                              <th className="py-2.5 px-3">Overdue Months</th>
+                              <th className="py-2.5 px-3 text-right">Pending Balance</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                            {filteredDefaultersList.map((item, idx) => (
+                              <tr key={idx} className="hover:bg-amber-50/40 transition">
+                                <td className="py-2.5 px-3 font-mono font-bold text-slate-900">
+                                  {item.rollNumber}
+                                </td>
+                                <td className="py-2.5 px-3 font-bold text-slate-900">
+                                  {item.studentName}
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <span className="font-semibold text-slate-800">{item.className}</span>
+                                  <span className="text-slate-400 ml-1">({item.section})</span>
+                                </td>
+                                <td className="py-2.5 px-3 text-slate-600">
+                                  {item.fatherName}
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                                    {item.monthsDueCount} mo: {item.pendingMonthsStr}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-3 text-right font-black text-rose-700 text-sm">
+                                  {formatAmount(item.totalPending, isCardMasked('dues'))}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   )}
                 </div>

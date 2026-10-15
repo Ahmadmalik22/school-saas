@@ -53,3 +53,40 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 160, 0, 0.5);
 }
+
+/* Sleek horizontal scrollbars for tables on mobile and desktop */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dynamic QR Code Green Laser Scanner Sweep Animation */
+@keyframes qrLaserSweep {
+  0% {
+    top: 0px;
+    opacity: 0.8;
+  }
+  50% {
+    top: calc(100% - 10px);
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    opacity: 0.8;
+  }
+}
+
+.animate-laser-sweep {
+  animation: qrLaserSweep 2.4s ease-in-out infinite;
+}
+

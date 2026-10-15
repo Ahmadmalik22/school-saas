@@ -41,6 +41,7 @@ export const SYSTEM_MODULES = [
     submodules: [
       { id: 'student_info', name: 'Student Information Directory', route: '/students/directory' },
       { id: 'student_promotion', name: 'Student Class Promotion', route: '/students/promotion' },
+      { id: 'generate_id_card', name: 'Generate Student ID Cards', route: '/students/id-cards' },
     ],
   },
   {
@@ -61,6 +62,7 @@ export const SYSTEM_MODULES = [
       { id: 'student_attendance_register', name: 'Student Monthly Register', route: '/attendance/student-register' },
       { id: 'staff_attendance', name: 'Staff Daily Attendance', route: '/attendance/staff' },
       { id: 'staff_attendance_register', name: 'Staff Monthly Register', route: '/attendance/staff-register' },
+      { id: 'qr_scanner', name: 'QR Attendance Scanner', route: '/attendance/qr-scanner' },
     ],
   },
   {
@@ -134,6 +136,7 @@ export const ROLE_PRESETS = {
     'inquiries',
     'print_form',
     'student_info',
+    'generate_id_card',
     'reports_admission',
   ],
   EXAM_INCHARGE: [
@@ -146,6 +149,7 @@ export const ROLE_PRESETS = {
   TEACHER: [
     'student_attendance',
     'student_attendance_register',
+    'qr_scanner',
     'exam_marks_entry',
   ],
   CUSTOM: [],

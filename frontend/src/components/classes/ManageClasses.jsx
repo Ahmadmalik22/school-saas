@@ -162,7 +162,7 @@ export default function ManageClasses({ schoolCode }) {
   const totalStudentsEnrolled = classes.reduce((acc, c) => acc + (c.totalEnrolled || 0), 0);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5">
+    <div className="w-full max-w-[1800px] mx-auto space-y-5">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -267,125 +267,127 @@ export default function ManageClasses({ schoolCode }) {
 
       {/* Classes Table */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs text-slate-600">
-          <thead className="bg-[#041633] text-white uppercase text-[11px] font-bold tracking-wider">
-            <tr>
-              <th className="py-3 px-4 w-14 text-center">#</th>
-              <th className="py-3 px-4">Class Name</th>
-              <th className="py-3 px-4">Sections</th>
-              <th className="py-3 px-4">Total Students</th>
-              <th className="py-3 px-4 text-center">Status</th>
-              <th className="py-3 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium">
-            {loading && classes.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-600">
+            <thead className="bg-[#041633] text-white uppercase text-[11px] font-bold tracking-wider">
               <tr>
-                <td colSpan="6" className="py-10 text-center text-slate-400">
-                  <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-amber-500" />
-                  Loading classes...
-                </td>
+                <th className="py-3 px-4 w-14 text-center">#</th>
+                <th className="py-3 px-4">Class Name</th>
+                <th className="py-3 px-4">Sections</th>
+                <th className="py-3 px-4">Total Students</th>
+                <th className="py-3 px-4 text-center">Status</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
-            ) : filteredClasses.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="py-10 text-center text-slate-400">
-                  <Layers className="w-7 h-7 mx-auto mb-2 text-slate-300" />
-                  No classes found. Click "+ Add Class" to create one.
-                </td>
-              </tr>
-            ) : (
-              filteredClasses.map((cls, idx) => (
-                <tr key={cls._id} className="hover:bg-slate-50/80 transition">
-                  {/* Order */}
-                  <td className="py-3 px-4 text-center">
-                    <span className="font-bold text-slate-500 text-[11px]">
-                      {cls.numericOrder || idx + 1}
-                    </span>
-                  </td>
-
-                  {/* Class Name */}
-                  <td className="py-3 px-4">
-                    <span className="font-bold text-slate-900 text-sm">
-                      {cls.name}
-                    </span>
-                  </td>
-
-                  {/* Sections Badges */}
-                  <td className="py-3 px-4">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {cls.sections && cls.sections.length > 0 ? (
-                        cls.sections.map((sec) => (
-                          <span
-                            key={sec._id || sec.name}
-                            className="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold"
-                          >
-                            Sec {sec.name}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-slate-400 italic">No section</span>
-                      )}
-
-                      {/* Quick Add Section */}
-                      <button
-                        onClick={() => {
-                          setQuickSectionClass(cls);
-                          setNewSectionName('');
-                        }}
-                        className="text-[10px] text-amber-700 bg-amber-50 hover:bg-amber-100 px-1.5 py-0.5 rounded font-bold border border-amber-200 transition cursor-pointer"
-                        title="Add Section to this class"
-                      >
-                        + Add Sec
-                      </button>
-                    </div>
-                  </td>
-
-                  {/* Enrolled Students */}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                      <Users className="w-3.5 h-3.5 text-blue-500" />
-                      <span>{cls.totalEnrolled || 0}</span>
-                      <span className="text-[11px] text-slate-400 font-normal">Students</span>
-                    </div>
-                  </td>
-
-                  {/* Status */}
-                  <td className="py-3 px-4 text-center">
-                    <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                        cls.isActive
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : 'bg-slate-100 text-slate-500 border-slate-200'
-                      }`}
-                    >
-                      {cls.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-3 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => setEditClass(cls)}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
-                        title="Edit Class"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClass(cls)}
-                        className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                        title="Delete Class"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {loading && classes.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="py-10 text-center text-slate-400">
+                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-amber-500" />
+                    Loading classes...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredClasses.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="py-10 text-center text-slate-400">
+                    <Layers className="w-7 h-7 mx-auto mb-2 text-slate-300" />
+                    No classes found. Click "+ Add Class" to create one.
+                  </td>
+                </tr>
+              ) : (
+                filteredClasses.map((cls, idx) => (
+                  <tr key={cls._id} className="hover:bg-slate-50/80 transition">
+                    {/* Order */}
+                    <td className="py-3 px-4 text-center">
+                      <span className="font-bold text-slate-500 text-[11px]">
+                        {cls.numericOrder || idx + 1}
+                      </span>
+                    </td>
+
+                    {/* Class Name */}
+                    <td className="py-3 px-4">
+                      <span className="font-bold text-slate-900 text-sm">
+                        {cls.name}
+                      </span>
+                    </td>
+
+                    {/* Sections Badges */}
+                    <td className="py-3 px-4">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {cls.sections && cls.sections.length > 0 ? (
+                          cls.sections.map((sec) => (
+                            <span
+                              key={sec._id || sec.name}
+                              className="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold"
+                            >
+                              Sec {sec.name}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-400 italic">No section</span>
+                        )}
+
+                        {/* Quick Add Section */}
+                        <button
+                          onClick={() => {
+                            setQuickSectionClass(cls);
+                            setNewSectionName('');
+                          }}
+                          className="text-[10px] text-amber-700 bg-amber-50 hover:bg-amber-100 px-1.5 py-0.5 rounded font-bold border border-amber-200 transition cursor-pointer"
+                          title="Add Section to this class"
+                        >
+                          + Add Sec
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* Enrolled Students */}
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                        <Users className="w-3.5 h-3.5 text-blue-500" />
+                        <span>{cls.totalEnrolled || 0}</span>
+                        <span className="text-[11px] text-slate-400 font-normal">Students</span>
+                      </div>
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-3 px-4 text-center">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          cls.isActive
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-slate-100 text-slate-500 border-slate-200'
+                        }`}
+                      >
+                        {cls.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setEditClass(cls)}
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                          title="Edit Class"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClass(cls)}
+                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                          title="Delete Class"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* =========================================================================

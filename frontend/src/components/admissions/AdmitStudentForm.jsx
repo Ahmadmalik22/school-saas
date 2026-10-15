@@ -149,7 +149,7 @@ export default function AdmitStudentForm({ schoolCode }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Banner / Header */}
       <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

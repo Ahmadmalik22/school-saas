@@ -51,6 +51,7 @@ export const updateSchoolProfile = async (req, res) => {
       principalTitle,
       vicePrincipalTitle,
       logoUrl,
+      principalSignatureUrl,
       activeSession,
     } = req.body;
 
@@ -73,6 +74,7 @@ export const updateSchoolProfile = async (req, res) => {
           principalTitle: principalTitle ? principalTitle.trim() : 'Principal',
           vicePrincipalTitle: vicePrincipalTitle ? vicePrincipalTitle.trim() : 'Vice Principal',
           logoUrl: logoUrl !== undefined ? logoUrl : null,
+          principalSignatureUrl: principalSignatureUrl !== undefined ? principalSignatureUrl : null,
           activeSession: activeSession || '2025-2026',
         },
       },

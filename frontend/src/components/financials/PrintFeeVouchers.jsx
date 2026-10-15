@@ -231,7 +231,7 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
         </div>
 
         {/* Filter Bar */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-5 gap-3 items-end text-xs">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end text-xs">
           <div>
             <label className="block font-bold text-slate-700 mb-1">Class</label>
             <select
@@ -349,7 +349,8 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
       )}
 
       {/* PRINT ENGINE CONTAINER (Formatted strictly for A4 Portrait, 4 Vouchers Per Page) */}
-      <div className="voucher-print-container">
+      <div className="overflow-x-auto py-2">
+        <div className="voucher-print-container min-w-[210mm]">
         {a4Pages.map((pageVouchers, pageIdx) => (
           <div
             key={pageIdx}
@@ -681,6 +682,7 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
             })}
           </div>
         ))}
+        </div>
       </div>
 
       {/* Strict A4 Print CSS Stylesheet */}

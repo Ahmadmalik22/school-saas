@@ -6,6 +6,8 @@ import {
   getStaffAttendanceSheet,
   saveStaffAttendanceSheet,
   getMonthlyStaffRegister,
+  markQrAttendance,
+  getTodayQrAttendance,
 } from '../controllers/attendanceController.js';
 
 const router = express.Router();
@@ -24,4 +26,11 @@ router.get('/staff/sheet', getStaffAttendanceSheet);
 router.post('/staff/sheet', saveStaffAttendanceSheet);
 router.get('/staff/monthly-register', getMonthlyStaffRegister);
 
+// =========================================================================
+// 🅲 Digital QR Attendance Gate Scanner Routes
+// =========================================================================
+router.post('/qr-scan', markQrAttendance);
+router.get('/qr-today', getTodayQrAttendance);
+
 export default router;
+

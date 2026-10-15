@@ -256,7 +256,7 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5">
+    <div className="w-full max-w-[1800px] mx-auto space-y-5">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -319,7 +319,7 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
 
       {/* 1. TOP FILTER BAR (EXACT WORKFLOW FROM USER'S SCREENSHOT) */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-end text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end text-xs">
           {/* Type Dropdown */}
           <div>
             <label className="block font-bold text-slate-700 mb-1">Type</label>

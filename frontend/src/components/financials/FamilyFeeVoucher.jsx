@@ -104,7 +104,7 @@ export default function FamilyFeeVoucher({ schoolCode, setActiveSubModule }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Toast Alert */}
       {toast && (
         <div

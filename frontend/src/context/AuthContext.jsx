@@ -3,7 +3,11 @@ import { io } from 'socket.io-client';
 import api from '../api/axios';
 import { SYSTEM_MODULES, ALL_SUBMODULE_KEYS } from '../constants/moduleCatalog';
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_SERVER_URL =
+  import.meta.env.VITE_SOCKET_URL ||
+  (import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
+    : 'http://localhost:5000');
 
 const AuthContext = createContext(null);
 
@@ -326,6 +330,7 @@ export const AuthProvider = ({ children }) => {
         schoolName: schoolProfile?.schoolName || activeSchoolName,
         schoolProfile,
         schoolLogo: schoolProfile?.logoUrl || null,
+        principalSignature: schoolProfile?.principalSignatureUrl || null,
         schoolTagline: schoolProfile?.tagline || '',
         schoolAddress: schoolProfile?.address || '',
         schoolAffiliation: schoolProfile?.affiliation || '',

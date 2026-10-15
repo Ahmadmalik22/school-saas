@@ -12,11 +12,12 @@ import {
   toggleSchoolStatus,
 } from '../controllers/authController.js';
 import { protect, requireSuperAdmin } from '../middlewares/authMiddleware.js';
+import { loginRateLimiter } from '../middlewares/rateLimiter.js';
 
 const router = express.Router();
 
-// Public Auth Endpoints
-router.post('/login', login);
+// Public Auth Endpoints (Protected with strict brute-force rate limiter)
+router.post('/login', loginRateLimiter, login);
 router.get('/catalog', getModuleCatalog);
 
 // Protected User Profile

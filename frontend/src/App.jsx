@@ -21,6 +21,7 @@ import AdmissionInquiries from './components/admissions/AdmissionInquiries';
 import PrintAdmissionForm from './components/admissions/PrintAdmissionForm';
 import StudentInformation from './components/students/StudentInformation';
 import StudentPromotion from './components/students/StudentPromotion';
+import GenerateIdCard from './components/students/GenerateIdCard';
 import ManageClasses from './components/classes/ManageClasses';
 import ManageSections from './components/classes/ManageSections';
 import AddStaffForm from './components/staff/AddStaffForm';
@@ -29,6 +30,7 @@ import StudentAttendance from './components/attendance/StudentAttendance';
 import StudentMonthlyRegister from './components/attendance/StudentMonthlyRegister';
 import StaffAttendance from './components/attendance/StaffAttendance';
 import StaffMonthlyRegister from './components/attendance/StaffMonthlyRegister';
+import QrAttendanceScanner from './components/attendance/QrAttendanceScanner';
 import StudentFeeGeneration from './components/financials/StudentFeeGeneration';
 import StudentFeeManagement from './components/financials/StudentFeeManagement';
 import FamilyFeeVoucher from './components/financials/FamilyFeeVoucher';
@@ -116,6 +118,16 @@ function AppContent() {
 
   const activeSubModule = PATH_TO_SUBMODULE[location.pathname] || 'dashboard';
 
+  // Responsive Sidebar Controls: Mobile Drawer & Desktop Mini Collapse
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => {
+    try {
+      return localStorage.getItem('sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   // 1. Loading splash while verifying session
   if (loading) {
     return (
@@ -150,25 +162,41 @@ function AppContent() {
   return (
     <AcademicSessionProvider schoolCode={schoolCode}>
       <AcademicClassesProvider schoolCode={schoolCode}>
-        <div className="flex h-screen bg-[#f0f2f5] overflow-hidden font-sans">
-          {/* 1. Left Sidebar (Akkhor Dark Navy Theme with Granular Submodule Filtering) */}
+        <div className="flex h-screen bg-[#f0f2f5] overflow-hidden font-sans relative">
+          {/* Mobile Backdrop Overlay */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* 1. Left Sidebar (Akkhor Dark Navy Theme with Mobile Drawer & Desktop Collapse) */}
           <Sidebar
             activeSubModule={activeSubModule}
             setActiveSubModule={handleSetActiveSubModule}
             schoolCode={schoolCode}
+            isOpen={sidebarOpen}
+            setIsOpen={setSidebarOpen}
+            isCollapsed={sidebarCollapsed}
+            setIsCollapsed={setSidebarCollapsed}
           />
 
           {/* 2. Main Content Wrapper */}
           <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-            {/* Top Navbar */}
+            {/* Top Navbar with Sidebar Toggle */}
             <Navbar
               schoolCode={schoolCode}
               setSchoolCode={setSchoolCode}
               activeSubModule={activeSubModule}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+              sidebarCollapsed={sidebarCollapsed}
+              setSidebarCollapsed={setSidebarCollapsed}
             />
 
-            {/* Dynamic View Body with Granular Sub-Module Route Guards */}
-            <main className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            {/* Dynamic View Body with Mobile Responsive Padding */}
+            <main className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-6 custom-scrollbar">
               <Routes>
                 {/* Redirect /login when already authenticated */}
                 <Route
@@ -317,6 +345,15 @@ function AppContent() {
                     />
                   }
                 />
+                <Route
+                  path={ROUTES.STUDENTS_ID_CARDS}
+                  element={
+                    <ProtectedSubmodule
+                      submoduleKey="generate_id_card"
+                      element={<GenerateIdCard schoolCode={schoolCode} />}
+                    />
+                  }
+                />
 
                 {/* Staff & Faculty */}
                 <Route
@@ -372,6 +409,15 @@ function AppContent() {
                     <ProtectedSubmodule
                       submoduleKey="staff_attendance_register"
                       element={<StaffMonthlyRegister schoolCode={schoolCode} />}
+                    />
+                  }
+                />
+                <Route
+                  path={ROUTES.ATTENDANCE_QR_SCANNER}
+                  element={
+                    <ProtectedSubmodule
+                      submoduleKey="qr_scanner"
+                      element={<QrAttendanceScanner schoolCode={schoolCode} />}
                     />
                   }
                 />

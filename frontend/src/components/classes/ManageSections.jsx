@@ -168,7 +168,7 @@ export default function ManageSections({ schoolCode }) {
   });
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5">
+    <div className="w-full max-w-[1800px] mx-auto space-y-5">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -263,86 +263,88 @@ export default function ManageSections({ schoolCode }) {
 
       {/* Sections Table */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs text-slate-600">
-          <thead className="bg-[#041633] text-white uppercase text-[11px] font-bold tracking-wider">
-            <tr>
-              <th className="py-3 px-4 w-14 text-center">#</th>
-              <th className="py-3 px-4">Class</th>
-              <th className="py-3 px-4">Section Name</th>
-              <th className="py-3 px-4">Enrolled Students</th>
-              <th className="py-3 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium">
-            {loading && sections.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-600">
+            <thead className="bg-[#041633] text-white uppercase text-[11px] font-bold tracking-wider">
               <tr>
-                <td colSpan="5" className="py-10 text-center text-slate-400">
-                  <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-amber-500" />
-                  Loading sections...
-                </td>
+                <th className="py-3 px-4 w-14 text-center">#</th>
+                <th className="py-3 px-4">Class</th>
+                <th className="py-3 px-4">Section Name</th>
+                <th className="py-3 px-4">Enrolled Students</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
-            ) : filteredSections.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="py-10 text-center text-slate-400">
-                  <DoorOpen className="w-7 h-7 mx-auto mb-2 text-slate-300" />
-                  No sections found. Click "+ Add Section" to add one.
-                </td>
-              </tr>
-            ) : (
-              filteredSections.map((sec, idx) => (
-                <tr key={`${sec.classId}_${sec.sectionId}`} className="hover:bg-slate-50/80 transition">
-                  {/* Serial */}
-                  <td className="py-3 px-4 text-center text-slate-400 text-[11px]">
-                    {idx + 1}
-                  </td>
-
-                  {/* Class Name */}
-                  <td className="py-3 px-4">
-                    <span className="font-bold text-slate-900 text-sm">
-                      {sec.className}
-                    </span>
-                  </td>
-
-                  {/* Section Name */}
-                  <td className="py-3 px-4">
-                    <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-black bg-amber-50 text-amber-950 border border-amber-200">
-                      Section {sec.sectionName}
-                    </span>
-                  </td>
-
-                  {/* Enrolled Students */}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                      <Users className="w-3.5 h-3.5 text-blue-500" />
-                      <span>{sec.enrolledCount || 0}</span>
-                      <span className="text-[11px] text-slate-400 font-normal">Students</span>
-                    </div>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-3 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => setEditSection({ ...sec })}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
-                        title="Edit Section"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSection(sec)}
-                        className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                        title="Delete Section"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {loading && sections.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="py-10 text-center text-slate-400">
+                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-amber-500" />
+                    Loading sections...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredSections.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="py-10 text-center text-slate-400">
+                    <DoorOpen className="w-7 h-7 mx-auto mb-2 text-slate-300" />
+                    No sections found. Click "+ Add Section" to add one.
+                  </td>
+                </tr>
+              ) : (
+                filteredSections.map((sec, idx) => (
+                  <tr key={`${sec.classId}_${sec.sectionId}`} className="hover:bg-slate-50/80 transition">
+                    {/* Serial */}
+                    <td className="py-3 px-4 text-center text-slate-400 text-[11px]">
+                      {idx + 1}
+                    </td>
+
+                    {/* Class Name */}
+                    <td className="py-3 px-4">
+                      <span className="font-bold text-slate-900 text-sm">
+                        {sec.className}
+                      </span>
+                    </td>
+
+                    {/* Section Name */}
+                    <td className="py-3 px-4">
+                      <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-black bg-amber-50 text-amber-950 border border-amber-200">
+                        Section {sec.sectionName}
+                      </span>
+                    </td>
+
+                    {/* Enrolled Students */}
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                        <Users className="w-3.5 h-3.5 text-blue-500" />
+                        <span>{sec.enrolledCount || 0}</span>
+                        <span className="text-[11px] text-slate-400 font-normal">Students</span>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setEditSection({ ...sec })}
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                          title="Edit Section"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSection(sec)}
+                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                          title="Delete Section"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* =========================================================================

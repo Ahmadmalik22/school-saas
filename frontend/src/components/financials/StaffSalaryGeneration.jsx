@@ -184,7 +184,7 @@ export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }
   const modalNet = Math.max(0, modalBasic - modalTotalDed + Number(editForm.bonusesOrAllowance));
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-[1800px] mx-auto space-y-6">
       {/* Toast Alert */}
       {toast && (
         <div
@@ -231,7 +231,7 @@ export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }
       </div>
 
       {/* Filter & Policy Bar */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-3 items-end text-xs">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end text-xs">
         <div>
           <label className="block font-bold text-slate-700 mb-1">Salary Month</label>
           <input

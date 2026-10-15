@@ -515,7 +515,7 @@ export default function StaffMonthlyRegister({ schoolCode, setActiveSubModule })
   };
 
   return (
-    <div className="max-w-[98%] mx-auto space-y-5">
+    <div className="w-full max-w-[1800px] mx-auto space-y-5">
       {/* Print Specific CSS */}
       <style>{`
         @media print {
@@ -625,7 +625,7 @@ export default function StaffMonthlyRegister({ schoolCode, setActiveSubModule })
       </div>
 
       {/* Top Filter & Metric Controls */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-3 items-end text-xs">
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end text-xs">
         {/* Month Selector */}
         <div>
           <label className="block font-bold text-slate-700 mb-1">Select Month</label>

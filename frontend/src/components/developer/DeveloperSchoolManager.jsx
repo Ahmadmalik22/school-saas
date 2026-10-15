@@ -36,6 +36,7 @@ import {
   Camera,
   Image,
   X,
+  FileSignature,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import SchoolLogo from '../common/SchoolLogo';
@@ -83,6 +84,7 @@ export default function DeveloperSchoolManager() {
     adminEmail: '',
     adminPassword: '',
     logoUrl: '',
+    principalSignatureUrl: '',
   });
   const [registering, setRegistering] = useState(false);
 
@@ -211,6 +213,24 @@ export default function DeveloperSchoolManager() {
     reader.readAsDataURL(file);
   };
 
+  const handleSignatureUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size exceeds 5MB limit.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setNewSchoolData((prev) => ({ ...prev, principalSignatureUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Handle Register School Submit
   const handleRegisterSchoolSubmit = async (e) => {
     e.preventDefault();
@@ -233,6 +253,7 @@ export default function DeveloperSchoolManager() {
           adminEmail: '',
           adminPassword: '',
           logoUrl: '',
+          principalSignatureUrl: '',
         });
         fetchSchools();
         setTimeout(() => setSuccessMsg(''), 4000);
@@ -587,6 +608,12 @@ export default function DeveloperSchoolManager() {
                               {sch.phone}
                             </span>
                           )}
+                          {sch.principalSignatureUrl && (
+                            <span className="flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 text-[10px]">
+                              <FileSignature className="w-3 h-3 text-emerald-600" />
+                              Sign Active
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -762,6 +789,85 @@ export default function DeveloperSchoolManager() {
                 </div>
               </div>
 
+              {/* Principal Signature Picture Upload */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <FileSignature className="w-4 h-4 text-amber-600" />
+                  <span>Principal / Authority Signature Picture</span>
+                </label>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {/* Signature Preview Box */}
+                  <div className="w-32 h-20 rounded-xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center overflow-hidden shrink-0 shadow-inner relative group p-2">
+                    {newSchoolData.principalSignatureUrl ? (
+                      <>
+                        <img
+                          src={newSchoolData.principalSignatureUrl}
+                          alt="Principal Signature Preview"
+                          className="max-h-11 max-w-full object-contain filter contrast-125"
+                        />
+                        <div className="w-16 h-0.5 bg-slate-300 rounded mt-1"></div>
+                        <span className="text-[6.5px] text-slate-400 uppercase font-black tracking-wider block mt-0.5">
+                          Principal Sign
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setNewSchoolData({ ...newSchoolData, principalSignatureUrl: '' })}
+                          className="absolute inset-0 bg-slate-950/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                          title="Remove Signature"
+                        >
+                          <X className="w-5 h-5 text-red-400" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="text-center p-1 text-slate-400">
+                        <span className="font-serif italic text-xs text-slate-400 block">Principal</span>
+                        <div className="w-14 h-0.5 bg-slate-200 rounded mx-auto mt-0.5"></div>
+                        <span className="text-[8px] font-bold block mt-0.5">No Sign File</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload Controls */}
+                  <div className="flex-1 w-full space-y-2">
+                    <div className="flex items-center gap-2">
+                      <label className="px-3.5 py-1.5 bg-[#041633] hover:bg-[#072454] text-[#ffa000] text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Signature File</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleSignatureUpload}
+                          className="sr-only"
+                        />
+                      </label>
+                      {newSchoolData.principalSignatureUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setNewSchoolData({ ...newSchoolData, principalSignatureUrl: '' })}
+                          className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-lg transition cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="url"
+                        placeholder="Or paste signature image URL"
+                        value={newSchoolData.principalSignatureUrl?.startsWith('data:') ? '' : newSchoolData.principalSignatureUrl || ''}
+                        onChange={(e) => setNewSchoolData({ ...newSchoolData, principalSignatureUrl: e.target.value })}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      Recommended: Clean PNG or JPG photo of Principal signature. Printed automatically on Student ID Cards & Official Documents.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* School Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -931,7 +1037,7 @@ export default function DeveloperSchoolManager() {
       {/* 6. MODAL: MANAGE SCHOOL USERS & GRANULAR SUB-MODULE RIGHTS */}
       {/* ========================================================================= */}
       {showUsersModal && selectedSchool && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl overflow-hidden my-6 animate-in fade-in duration-200 flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-[#041633] via-[#09224f] to-[#041633] text-white p-5 flex items-center justify-between shrink-0">
@@ -1148,49 +1254,70 @@ export default function DeveloperSchoolManager() {
                     <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('ADMIN')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('ADMIN');
+                        }}
                         className="px-3 py-1.5 bg-[#041633] text-[#ffa000] hover:bg-[#072454] rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         ★ Full Administrator (All 33)
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('ACCOUNTANT')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('ACCOUNTANT');
+                        }}
                         className="px-3 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         💼 Accountant Preset (8 Sub-modules)
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('CASHIER')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('CASHIER');
+                        }}
                         className="px-3 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         💵 Cashier Preset (Fee Counter only)
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('ADMISSION_OFFICER')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('ADMISSION_OFFICER');
+                        }}
                         className="px-3 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         📝 Admission Officer Preset
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('EXAM_INCHARGE')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('EXAM_INCHARGE');
+                        }}
                         className="px-3 py-1.5 bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         🏆 Exam Incharge Preset
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('TEACHER')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('TEACHER');
+                        }}
                         className="px-3 py-1.5 bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         📚 Teacher Preset
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleApplyPreset('CLEAR')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleApplyPreset('CLEAR');
+                        }}
                         className="px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition cursor-pointer"
                       >
                         ✕ Clear All
@@ -1270,7 +1397,10 @@ export default function DeveloperSchoolManager() {
 
                               <button
                                 type="button"
-                                onClick={() => handleToggleParentModule(parent.id)}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleToggleParentModule(parent.id);
+                                }}
                                 className="text-[11px] px-2 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold transition cursor-pointer"
                               >
                                 {allInParentSelected ? 'Deselect Module' : 'Select All in Module'}
@@ -1278,13 +1408,14 @@ export default function DeveloperSchoolManager() {
 
                               <button
                                 type="button"
-                                onClick={() =>
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   setExpandedModules((prev) => ({
                                     ...prev,
                                     [parent.id]: !prev[parent.id],
-                                  }))
-                                }
-                                className="p-1 text-slate-400 hover:text-slate-600"
+                                  }));
+                                }}
+                                className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
                               >
                                 {isExpanded ? (
                                   <ChevronUp className="w-4 h-4" />
@@ -1302,20 +1433,21 @@ export default function DeveloperSchoolManager() {
                                 const isChecked = userFormData.permissions?.includes(sub.id);
 
                                 return (
-                                  <label
+                                  <button
                                     key={sub.id}
-                                    className={`flex items-start gap-2.5 p-2.5 rounded-xl border transition cursor-pointer select-none ${
+                                    type="button"
+                                    role="checkbox"
+                                    aria-checked={isChecked}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleToggleSubmodule(sub.id);
+                                    }}
+                                    className={`w-full text-left flex items-start gap-2.5 p-2.5 rounded-xl border transition cursor-pointer select-none ${
                                       isChecked
-                                        ? 'bg-amber-50/70 border-amber-300 text-slate-900 shadow-xs'
+                                        ? 'bg-amber-50/80 border-amber-300 text-slate-900 shadow-xs'
                                         : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'
                                     }`}
                                   >
-                                    <input
-                                      type="checkbox"
-                                      checked={isChecked}
-                                      onChange={() => handleToggleSubmodule(sub.id)}
-                                      className="sr-only"
-                                    />
                                     <div className="mt-0.5 shrink-0">
                                       {isChecked ? (
                                         <CheckSquare className="w-4 h-4 text-amber-600" />
@@ -1331,7 +1463,7 @@ export default function DeveloperSchoolManager() {
                                         {sub.id}
                                       </div>
                                     </div>
-                                  </label>
+                                  </button>
                                 );
                               })}
                             </div>

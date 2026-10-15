@@ -127,12 +127,14 @@ export const getClassAttendanceSheet = async (req, res) => {
         percentage,
       };
 
+      const isManualSubmitted = existingSheet.attendanceType === 'MANUAL';
+
       return res.status(200).json({
         success: true,
-        isExisting: true,
-        message: hasMissing
-          ? 'Existing attendance sheet loaded and synced with newly enrolled students.'
-          : 'Existing attendance sheet loaded.',
+        isExisting: isManualSubmitted,
+        message: isManualSubmitted
+          ? (hasMissing ? 'Existing attendance sheet loaded and synced with newly enrolled students.' : 'Existing attendance sheet loaded.')
+          : 'Gate QR scans loaded. Ready for teacher manual review and marking.',
         data: {
           ...existingSheet,
           records: mergedRecords,
@@ -819,6 +821,334 @@ export const getMonthlyStaffRegister = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to generate monthly staff register.',
+      error: error.message,
+    });
+  }
+};
+
+// =========================================================================
+// 🅲 SUB-MODULE 5: DIGITAL QR ATTENDANCE GATE SCANNER CONTROLLERS
+// =========================================================================
+
+/**
+ * 1. Process instant QR Code scan from Mobile Camera or Laptop Webcam
+ * Automatically marks the student PRESENT in today's class daily sheet with exact timeIn.
+ */
+export const markQrAttendance = async (req, res) => {
+  try {
+    const { schoolCode, qrPayload, timeIn } = req.body;
+
+    if (!schoolCode || !qrPayload) {
+      return res.status(400).json({
+        success: false,
+        message: 'School code and QR payload are required.',
+      });
+    }
+
+    const cleanCode = schoolCode.trim().toUpperCase();
+
+    // Parse payload (Supports plain admissionNumber, rollNumber, ObjectId, or JSON string/object)
+    let searchCriteria = {};
+    let parsedData = null;
+
+    if (typeof qrPayload === 'string') {
+      try {
+        parsedData = JSON.parse(qrPayload);
+      } catch {
+        // Not JSON - treat as plain text identifier
+        parsedData = null;
+      }
+    } else if (typeof qrPayload === 'object' && qrPayload !== null) {
+      parsedData = qrPayload;
+    }
+
+    if (parsedData) {
+      const candidateId = parsedData.studentId || parsedData._id || parsedData.id;
+      const candidateAdm = parsedData.admissionNumber || parsedData.admissionNo || parsedData.adm;
+      const candidateRoll = parsedData.rollNo || parsedData.rollNumber;
+
+      if (candidateId && /^[0-9a-fA-F]{24}$/.test(String(candidateId))) {
+        searchCriteria._id = candidateId;
+      } else if (candidateAdm) {
+        searchCriteria.admissionNumber = String(candidateAdm).trim();
+      } else if (candidateRoll && parsedData.className) {
+        searchCriteria.rollNumber = String(candidateRoll).trim();
+        searchCriteria.className = parsedData.className;
+        if (parsedData.section) searchCriteria.section = parsedData.section;
+      }
+    } else {
+      const trimmed = String(qrPayload).trim();
+      if (/^[0-9a-fA-F]{24}$/.test(trimmed)) {
+        searchCriteria._id = trimmed;
+      } else {
+        searchCriteria.$or = [
+          { admissionNumber: { $regex: `^${trimmed}$`, $options: 'i' } },
+          { rollNumber: trimmed },
+        ];
+      }
+    }
+
+    // Find student in active database for this schoolCode
+    let student = await Student.findOne({
+      schoolCode: cleanCode,
+      ...searchCriteria,
+      status: 'ACTIVE',
+    }).lean();
+
+    // Fallback 1: case-insensitive admissionNumber if not found by primary criteria
+    if (!student && searchCriteria.admissionNumber) {
+      student = await Student.findOne({
+        schoolCode: cleanCode,
+        admissionNumber: { $regex: `^${String(searchCriteria.admissionNumber).trim()}$`, $options: 'i' },
+        status: 'ACTIVE',
+      }).lean();
+    }
+
+    // Fallback 2: search by rollNumber if string was provided
+    if (!student && typeof qrPayload === 'string' && !parsedData) {
+      student = await Student.findOne({
+        schoolCode: cleanCode,
+        rollNumber: qrPayload.trim(),
+        status: 'ACTIVE',
+      }).lean();
+    }
+
+    // Fallback 3: check parsedData.rollNo
+    if (!student && parsedData?.rollNo) {
+      const query = { schoolCode: cleanCode, rollNumber: String(parsedData.rollNo).trim(), status: 'ACTIVE' };
+      if (parsedData.className) query.className = parsedData.className;
+      student = await Student.findOne(query).lean();
+    }
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found in active records or invalid ID card for this campus.',
+      });
+    }
+
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0];
+    const monthYear = dateString.substring(0, 7);
+    const scanTime =
+      timeIn ||
+      today.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+
+    // Find or create StudentAttendance sheet for this student's class and section today
+    let sheet = await StudentAttendance.findOne({
+      schoolCode: cleanCode,
+      className: student.className,
+      section: student.section,
+      dateString,
+    });
+
+    let alreadyMarked = false;
+
+    if (!sheet) {
+      // Initialize sheet with ONLY the scanned student (never pre-fill rest of class)
+      const records = [
+        {
+          studentId: student._id,
+          admissionNumber: student.admissionNumber,
+          rollNumber: student.rollNumber || '',
+          studentName: student.fullName,
+          fatherName: student.fatherName || '',
+          status: 'PRESENT',
+          timeIn: scanTime,
+          remarks: 'Digital QR Gate Scan',
+        },
+      ];
+
+      sheet = new StudentAttendance({
+        schoolCode: cleanCode,
+        className: student.className,
+        section: student.section,
+        date: today,
+        dateString,
+        monthYear,
+        academicSession: student.academicSession || '2025-2026',
+        attendanceType: 'QR_SCANNER',
+        records,
+        summary: {
+          totalStudents: 1,
+          presentCount: 1,
+          absentCount: 0,
+          leaveCount: 0,
+          holidayCount: 0,
+          sundayCount: 0,
+          halfDayCount: 0,
+          percentage: 100,
+        },
+        markedBy: 'Digital QR Attendance Gate Scanner',
+      });
+
+      await sheet.save();
+    } else {
+      // Sheet already exists: find this student's record
+      const recIndex = sheet.records.findIndex(
+        (r) => String(r.studentId) === String(student._id)
+      );
+
+      if (recIndex !== -1) {
+        if (sheet.records[recIndex].status === 'PRESENT' && sheet.records[recIndex].remarks === 'Digital QR Gate Scan') {
+          alreadyMarked = true;
+        } else {
+          sheet.records[recIndex].status = 'PRESENT';
+          sheet.records[recIndex].timeIn = scanTime;
+          sheet.records[recIndex].remarks = 'Digital QR Gate Scan';
+        }
+      } else {
+        sheet.records.push({
+          studentId: student._id,
+          admissionNumber: student.admissionNumber,
+          rollNumber: student.rollNumber || '',
+          studentName: student.fullName,
+          fatherName: student.fatherName || '',
+          status: 'PRESENT',
+          timeIn: scanTime,
+          remarks: 'Digital QR Gate Scan',
+        });
+      }
+
+      // Recalculate summary metrics
+      let presentCount = 0;
+      let absentCount = 0;
+      let leaveCount = 0;
+      let holidayCount = 0;
+      let sundayCount = 0;
+      let halfDayCount = 0;
+
+      sheet.records.forEach((rec) => {
+        const st = (rec.status || 'ABSENT').toUpperCase();
+        if (st === 'PRESENT') presentCount += 1;
+        else if (st === 'ABSENT') absentCount += 1;
+        else if (st === 'LEAVE') leaveCount += 1;
+        else if (st === 'HOLIDAY') holidayCount += 1;
+        else if (st === 'SUNDAY') sundayCount += 1;
+        else if (st === 'HALF_DAY') halfDayCount += 1;
+      });
+
+      const totalStudents = sheet.records.length;
+      const activeAttended = presentCount + halfDayCount * 0.5;
+      const activeTarget = totalStudents - holidayCount - sundayCount;
+      const percentage =
+        activeTarget > 0 ? Math.round((activeAttended / activeTarget) * 100) : 100;
+
+      sheet.summary = {
+        totalStudents,
+        presentCount,
+        absentCount,
+        leaveCount,
+        holidayCount,
+        sundayCount,
+        halfDayCount,
+        percentage,
+      };
+
+      sheet.attendanceType = 'QR_SCANNER';
+      await sheet.save();
+    }
+
+    const recordedStudent = sheet.records.find(
+      (r) => String(r.studentId) === String(student._id)
+    );
+
+    return res.status(200).json({
+      success: true,
+      alreadyMarked,
+      message: alreadyMarked
+        ? `${student.fullName} is already marked PRESENT today at ${recordedStudent?.timeIn || scanTime}.`
+        : `Attendance marked successfully for ${student.fullName}!`,
+      data: {
+        studentId: student._id,
+        fullName: student.fullName,
+        fatherName: student.fatherName,
+        rollNumber: student.rollNumber,
+        admissionNumber: student.admissionNumber,
+        className: student.className,
+        section: student.section,
+        photo: student.photo?.url || null,
+        status: 'PRESENT',
+        timeIn: recordedStudent?.timeIn || scanTime,
+        dateString,
+      },
+    });
+  } catch (error) {
+    console.error('Error in markQrAttendance:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to mark attendance via QR scan.',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * 2. Get Today's Live Scanned QR Attendance Feed
+ */
+export const getTodayQrAttendance = async (req, res) => {
+  try {
+    const { schoolCode, date } = req.query;
+
+    if (!schoolCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'School code is required.',
+      });
+    }
+
+    const cleanCode = schoolCode.trim().toUpperCase();
+    const dateString = getStandardDateString(date);
+
+    const sheets = await StudentAttendance.find({
+      schoolCode: cleanCode,
+      dateString,
+    })
+      .populate('records.studentId', 'photo')
+      .lean();
+
+    const presentsToday = [];
+
+    sheets.forEach((sheet) => {
+      sheet.records.forEach((rec) => {
+        // Only include students who actually scanned their QR code at the scanner
+        const isQrScanned = rec.remarks === 'Digital QR Gate Scan' || (rec.timeIn && sheet.attendanceType === 'QR_SCANNER');
+        if (rec.status === 'PRESENT' && isQrScanned) {
+          presentsToday.push({
+            studentId: rec.studentId?._id || rec.studentId,
+            fullName: rec.studentName,
+            fatherName: rec.fatherName,
+            rollNumber: rec.rollNumber,
+            admissionNumber: rec.admissionNumber,
+            className: sheet.className,
+            section: sheet.section,
+            photo: rec.studentId?.photo?.url || null,
+            status: rec.status,
+            timeIn: rec.timeIn || '—',
+            remarks: rec.remarks || 'Digital QR Gate Scan',
+          });
+        }
+      });
+    });
+
+    // Reverse so latest appears on top
+    presentsToday.reverse();
+
+    return res.status(200).json({
+      success: true,
+      dateString,
+      totalPresent: presentsToday.length,
+      data: presentsToday,
+    });
+  } catch (error) {
+    console.error('Error in getTodayQrAttendance:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch today QR attendance feed.',
       error: error.message,
     });
   }
