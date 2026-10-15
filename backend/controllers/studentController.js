@@ -48,21 +48,24 @@ export const getStudents = async (req, res) => {
       ];
     }
 
-    const pageNum = Math.max(1, parseInt(page, 10));
-    const limitNum = Math.max(1, parseInt(limit, 10));
-    const skip = (pageNum - 1) * limitNum;
+    const isAll = limit === 'all' || limit === '0' || limit === 0;
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = isAll ? 0 : Math.max(1, parseInt(limit, 10) || 10);
+    const skip = isAll ? 0 : (pageNum - 1) * limitNum;
 
     // Execute query and total count in parallel
+    const queryChain = Student.find(query)
+      .sort({ className: 1, section: 1, rollNumber: 1 });
+    
+    if (skip > 0) queryChain.skip(skip);
+    if (limitNum > 0) queryChain.limit(limitNum);
+
     const [totalStudents, students] = await Promise.all([
       Student.countDocuments(query),
-      Student.find(query)
-        .sort({ className: 1, section: 1, rollNumber: 1 })
-        .skip(skip)
-        .limit(limitNum)
-        .lean(),
+      queryChain.lean(),
     ]);
 
-    const totalPages = Math.ceil(totalStudents / limitNum);
+    const totalPages = limitNum > 0 ? Math.ceil(totalStudents / limitNum) : 1;
 
     return res.status(200).json({
       success: true,

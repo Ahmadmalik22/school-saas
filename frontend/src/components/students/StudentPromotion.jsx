@@ -55,7 +55,7 @@ export default function StudentPromotion({ schoolCode }) {
           className: currentClass,
           section: currentSection,
           status: 'ACTIVE',
-          limit: 100, // Fetch up to 100 students in section
+          limit: 1000, // Fetch all students in section (up to 1000)
         },
       });
 

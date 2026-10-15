@@ -131,7 +131,7 @@ export default function GenerateIdCard({ schoolCode }) {
         params: {
           schoolCode,
           status: 'ACTIVE',
-          limit: 300,
+          limit: 1500,
           className: selectedClass !== 'ALL' ? selectedClass : undefined,
           section: selectedSection !== 'ALL' ? selectedSection : undefined,
           search: searchQuery.trim() || undefined,
