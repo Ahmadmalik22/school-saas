@@ -2,7 +2,11 @@ import axios from 'axios';
 
 // Central Axios instance configured for School Management SaaS API
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+      ? 'https://school-saas-g12p.onrender.com/api'
+      : 'http://localhost:5000/api'),
   headers: {
     'Content-Type': 'application/json',
   },

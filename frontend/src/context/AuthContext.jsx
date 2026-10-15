@@ -7,7 +7,9 @@ const SOCKET_SERVER_URL =
   import.meta.env.VITE_SOCKET_URL ||
   (import.meta.env.VITE_API_URL
     ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
-    : 'http://localhost:5000');
+    : (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+        ? 'https://school-saas-g12p.onrender.com'
+        : 'http://localhost:5000'));
 
 const AuthContext = createContext(null);
 

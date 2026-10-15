@@ -339,9 +339,24 @@ export default function QrAttendanceScanner({ schoolCode }) {
     setStatusMessage('Marking attendance in official school register...');
 
     try {
+      const scanDateObj = new Date();
+      const clientTimeIn = scanDateObj.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      const clientDateStr =
+        scanDateObj.getFullYear() +
+        '-' +
+        String(scanDateObj.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(scanDateObj.getDate()).padStart(2, '0');
+
       const res = await api.post('/attendance/qr-scan', {
         schoolCode,
         qrPayload,
+        timeIn: clientTimeIn,
+        clientDate: clientDateStr,
       });
 
       if (res.data.success && res.data.data) {

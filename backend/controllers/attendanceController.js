@@ -3,17 +3,17 @@ import { StaffAttendance } from '../models/StaffAttendance.js';
 import { Student } from '../models/Student.js';
 import { Staff } from '../models/Staff.js';
 
-// Helper to get standard dateString (YYYY-MM-DD)
+// Helper to get standard dateString (YYYY-MM-DD) in Pakistan Standard Time (PKT)
 const getStandardDateString = (inputDate) => {
   if (!inputDate) {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Karachi' }).format(today);
   }
   if (typeof inputDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
     return inputDate;
   }
   const d = new Date(inputDate);
-  return d.toISOString().split('T')[0];
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Karachi' }).format(d);
 };
 
 // =========================================================================
@@ -836,7 +836,7 @@ export const getMonthlyStaffRegister = async (req, res) => {
  */
 export const markQrAttendance = async (req, res) => {
   try {
-    const { schoolCode, qrPayload, timeIn } = req.body;
+    const { schoolCode, qrPayload, timeIn, clientDate } = req.body;
 
     if (!schoolCode || !qrPayload) {
       return res.status(400).json({
@@ -928,11 +928,12 @@ export const markQrAttendance = async (req, res) => {
     }
 
     const today = new Date();
-    const dateString = today.toISOString().split('T')[0];
+    const dateString = clientDate || getStandardDateString();
     const monthYear = dateString.substring(0, 7);
     const scanTime =
       timeIn ||
       today.toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Karachi',
         hour: '2-digit',
         minute: '2-digit',
         hour12: true,
