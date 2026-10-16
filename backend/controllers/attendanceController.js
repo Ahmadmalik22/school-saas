@@ -995,7 +995,7 @@ export const markQrAttendance = async (req, res) => {
       );
 
       if (recIndex !== -1) {
-        if (sheet.records[recIndex].status === 'PRESENT' && sheet.records[recIndex].remarks === 'Digital QR Gate Scan') {
+        if (sheet.records[recIndex].status === 'PRESENT') {
           alreadyMarked = true;
         } else {
           sheet.records[recIndex].status = 'PRESENT';

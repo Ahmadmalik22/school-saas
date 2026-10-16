@@ -120,14 +120,24 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
     }
   }, [selectedClass, selectedSection, selectedDate]);
 
+  // Helper: Get real current time (e.g. 12:45 PM)
+  const getCurrentFormattedTime = () => {
+    return new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   // ⚡ 4 BULK ACTION SHORTCUTS (From user's screenshot)
   const handleBulkSetStatus = (newStatus) => {
     if (records.length === 0) return;
+    const nowTime = getCurrentFormattedTime();
     setRecords((prev) =>
       prev.map((r) => ({
         ...r,
         status: newStatus,
-        timeIn: newStatus === 'PRESENT' ? (r.timeIn || '08:00 AM') : '',
+        timeIn: newStatus === 'PRESENT' ? (r.timeIn || nowTime) : '',
       }))
     );
     setToast({
@@ -138,12 +148,13 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
 
   // Individual Student Status Change
   const handleStatusChange = (index, status) => {
+    const nowTime = getCurrentFormattedTime();
     setRecords((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
         status,
-        timeIn: status === 'PRESENT' && !updated[index].timeIn ? '08:00 AM' : updated[index].timeIn,
+        timeIn: status === 'PRESENT' ? (updated[index].timeIn || nowTime) : '',
       };
       return updated;
     });
@@ -167,13 +178,19 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
 
     setSaving(true);
     try {
+      const nowTime = getCurrentFormattedTime();
+      const recordsToSave = records.map((r) => ({
+        ...r,
+        timeIn: r.status === 'PRESENT' ? (r.timeIn || nowTime) : '',
+      }));
+
       const res = await api.post('/attendance/student/sheet', {
         schoolCode,
         className: selectedClass,
         section: selectedSection,
         dateString: selectedDate,
         attendanceType,
-        records,
+        records: recordsToSave,
       });
 
       if (res.data.success) {
