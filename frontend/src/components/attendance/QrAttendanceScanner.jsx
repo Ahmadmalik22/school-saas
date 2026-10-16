@@ -30,6 +30,8 @@ import {
   Send,
   Upload,
   Info,
+  GraduationCap,
+  X,
 } from 'lucide-react';
 
 export default function QrAttendanceScanner({ schoolCode }) {
@@ -52,6 +54,36 @@ export default function QrAttendanceScanner({ schoolCode }) {
   const [lastScannedStudent, setLastScannedStudent] = useState(null);
   const [scanStatus, setScanStatus] = useState(null); // 'success', 'already_marked', 'error', 'loading'
   const [statusMessage, setStatusMessage] = useState('');
+
+  // Confirmation Dialogue Box Modal State (Holds next scan until operator presses OK)
+  const [modalStudent, setModalStudent] = useState(null);
+  const [modalAlreadyMarked, setModalAlreadyMarked] = useState(false);
+  const isModalOpenRef = useRef(false);
+
+  // Dismiss modal and resume scanning
+  const handleDismissModal = () => {
+    setModalStudent(null);
+    setModalAlreadyMarked(false);
+    isModalOpenRef.current = false;
+    // 700ms cooldown so holding the student card in front of camera does not immediately re-trigger
+    setTimeout(() => {
+      lastScannedPayloadRef.current = '';
+      isProcessingRef.current = false;
+    }, 700);
+  };
+
+  // Keyboard shortcut: Press Enter or Space or Escape to confirm OK and scan next student
+  useEffect(() => {
+    if (!modalStudent) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+        e.preventDefault();
+        handleDismissModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalStudent]);
 
   // Today's Live Attendance Feed
   const [todayPresents, setTodayPresents] = useState([]);
@@ -321,7 +353,8 @@ export default function QrAttendanceScanner({ schoolCode }) {
 
   // 7. Handle QR Code Detection & Backend Attendance Marking
   const handleQrCodeScanned = async (qrPayload) => {
-    if (!qrPayload || isProcessingRef.current) return;
+    // If dialogue modal is open or another scan is processing, drop immediately to prevent loop
+    if (!qrPayload || isProcessingRef.current || isModalOpenRef.current) return;
 
     const now = Date.now();
     // 2-second cooldown for the exact same QR payload to prevent rapid bursts
@@ -363,6 +396,11 @@ export default function QrAttendanceScanner({ schoolCode }) {
       if (res.data.success && res.data.data) {
         const student = res.data.data;
         setLastScannedStudent(student);
+
+        // Open Confirmation Dialogue Box and Hold Next Scans until operator clicks OK
+        isModalOpenRef.current = true;
+        setModalStudent(student);
+        setModalAlreadyMarked(!!res.data.alreadyMarked);
 
         if (res.data.alreadyMarked) {
           // Already marked earlier today
@@ -417,9 +455,12 @@ export default function QrAttendanceScanner({ schoolCode }) {
       );
       playWarningBeep();
     } finally {
-      setTimeout(() => {
-        isProcessingRef.current = false;
-      }, 600);
+      // If modal is NOT open (e.g. error occurred), unlock processing after 600ms
+      if (!isModalOpenRef.current) {
+        setTimeout(() => {
+          isProcessingRef.current = false;
+        }, 600);
+      }
     }
   };
 
@@ -972,6 +1013,151 @@ export default function QrAttendanceScanner({ schoolCode }) {
           </div>
         </div>
       </div>
+
+      {/* 4. ATTENDANCE CONFIRMATION DIALOGUE BOX (MODAL POPUP) */}
+      {modalStudent && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleDismissModal();
+          }}
+        >
+          <div className="relative w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform animate-in zoom-in-95 duration-200">
+            {/* Top Status Gradient Header */}
+            <div
+              className={`p-6 pb-14 text-white text-center relative ${
+                modalAlreadyMarked
+                  ? 'bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700'
+                  : 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700'
+              }`}
+            >
+              {/* Background glow effects */}
+              <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+              <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-white/10 rounded-full blur-lg pointer-events-none"></div>
+
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mb-2 shadow-inner">
+                  {modalAlreadyMarked ? (
+                    <Clock className="w-7 h-7 text-white" />
+                  ) : (
+                    <CheckCircle2 className="w-8 h-8 text-white animate-bounce" />
+                  )}
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white uppercase">
+                  {modalAlreadyMarked ? 'Already Present Today' : 'Attendance Marked!'}
+                </h3>
+                <p className="text-xs text-white/90 font-semibold mt-0.5">
+                  {modalAlreadyMarked
+                    ? `Recorded earlier today at ${modalStudent.timeIn || 'Gate Scan'}`
+                    : `Recorded Gate Check-In at ${modalStudent.timeIn}`}
+                </p>
+              </div>
+            </div>
+
+            {/* Student Photo & Particulars Body */}
+            <div className="p-6 pt-0 text-center relative">
+              {/* Elevated Student Photo */}
+              <div className="relative -mt-12 mb-3.5 inline-block">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white p-1 shadow-xl border-4 border-white overflow-hidden mx-auto">
+                  {modalStudent.photo ? (
+                    <img
+                      src={modalStudent.photo}
+                      alt={modalStudent.fullName}
+                      className="w-full h-full object-cover rounded-xl"
+                      crossOrigin="anonymous"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 text-slate-600 font-black text-3xl flex items-center justify-center rounded-xl">
+                      {modalStudent.fullName ? modalStudent.fullName.charAt(0).toUpperCase() : 'S'}
+                    </div>
+                  )}
+                </div>
+                <span
+                  className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm ${
+                    modalAlreadyMarked ? 'bg-amber-500' : 'bg-emerald-500'
+                  }`}
+                >
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                </span>
+              </div>
+
+              {/* Student Name & Father Name */}
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-wide leading-tight">
+                {modalStudent.fullName}
+              </h2>
+              {modalStudent.fatherName && (
+                <p className="text-xs font-bold text-slate-500 uppercase mt-1">
+                  S/D of {modalStudent.fatherName}
+                </p>
+              )}
+
+              {/* Badges Grid: Roll No, Class, Admission No, Status */}
+              <div className="grid grid-cols-2 gap-2.5 my-5 text-left">
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 shadow-2xs">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Roll Number
+                  </span>
+                  <span className="text-sm font-black text-slate-900 font-mono">
+                    #{modalStudent.rollNumber || '—'}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 shadow-2xs">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Class & Section
+                  </span>
+                  <span className="text-sm font-black text-slate-900">
+                    {modalStudent.className?.replace(/^class\s+/i, '')}-{modalStudent.section || 'A'}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 shadow-2xs">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Admission No.
+                  </span>
+                  <span className="text-xs font-black text-slate-800 font-mono truncate block">
+                    {modalStudent.admissionNumber || '—'}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 shadow-2xs">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Gate Status
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-xs font-black ${
+                      modalAlreadyMarked ? 'text-amber-700' : 'text-emerald-700'
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        modalAlreadyMarked ? 'bg-amber-500' : 'bg-emerald-500'
+                      }`}
+                    ></span>
+                    {modalAlreadyMarked ? 'ALREADY MARKED' : 'PRESENT'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Big OK Action Button */}
+              <button
+                type="button"
+                autoFocus
+                onClick={handleDismissModal}
+                className="w-full py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-black text-sm sm:text-base tracking-wide transition shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 cursor-pointer group"
+              >
+                <span>OK — Ready for Next Scan</span>
+                <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <p className="text-[11px] font-semibold text-slate-400 mt-2.5">
+                Press <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono text-slate-700">Enter ↵</kbd> or <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono text-slate-700">Space</kbd> to scan next
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

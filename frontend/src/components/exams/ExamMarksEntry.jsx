@@ -229,7 +229,7 @@ export default function ExamMarksEntry({ schoolCode }) {
       if (res.data?.success) {
         setMessage({
           type: 'success',
-          text: `Marks for Class ${selectedClass}-${selectedSection} saved successfully!`,
+          text: `Marks for ${selectedClass?.toLowerCase().startsWith('class') ? selectedClass : `Class ${selectedClass}`}-${selectedSection} saved successfully!`,
         });
       } else {
         setMessage({ type: 'error', text: res.data?.message || 'Failed to save marks.' });

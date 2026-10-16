@@ -528,7 +528,7 @@ export default function PrintReportCards({ schoolCode }) {
                   {/* Class & Academic Session Banner */}
                   <div className="text-center mb-6">
                     <span className="text-sm md:text-base font-black text-slate-900">
-                      Class: {rc.className}-{rc.section} ({rc.academicSession || academicSession})
+                      Class: {(rc.className || selectedClass || '').replace(/^class\s+/i, '')}-{rc.section} ({rc.academicSession || academicSession})
                     </span>
                   </div>
 
