@@ -449,13 +449,34 @@ export default function PrintReportCards({ schoolCode }) {
               {/* Inner Official Card (Rendered to PDF / Printed) */}
               <div
                 id={`report-card-inner-${rc.studentId}`}
-                className="report-card-inner-node border-[3px] border-slate-900 p-5 sm:p-6 md:p-8 rounded-lg relative min-h-[920px] min-w-[580px] md:min-w-0 flex flex-col justify-between bg-white text-slate-900"
+                className="report-card-inner-node border-4 border-double border-slate-900 p-6 sm:p-8 md:p-10 rounded-xl relative min-h-[960px] min-w-[620px] md:min-w-0 flex flex-col justify-between bg-white text-slate-900 shadow-sm"
               >
-                <div>
+                {/* 1. Official School Logo Watermark Effect in Background */}
+                {schoolProfile.logoUrl && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden"
+                    aria-hidden="true"
+                  >
+                    <img
+                      src={schoolProfile.logoUrl}
+                      alt="Watermark"
+                      className="w-[360px] h-[360px] md:w-[440px] md:h-[440px] object-contain opacity-[0.045] grayscale filter contrast-125"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                )}
+
+                {/* 2. Certificate Corner Ornamental Accents */}
+                <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-slate-900 pointer-events-none" />
+                <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-slate-900 pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-slate-900 pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-slate-900 pointer-events-none" />
+
+                <div className="relative z-10">
                   {/* Header: Dynamic School Logo, Dynamic Name & Title from logged-in school profile */}
                   <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-6">
                     {/* School Logo */}
-                    <div className="w-20 h-20 rounded-full border-2 border-slate-900 flex items-center justify-center p-1 bg-amber-50/20 shrink-0 overflow-hidden">
+                    <div className="w-20 h-20 rounded-full border-2 border-slate-900 flex items-center justify-center p-1 bg-amber-50/20 shrink-0 overflow-hidden shadow-2xs">
                       {schoolProfile.logoUrl ? (
                         <img
                           src={schoolProfile.logoUrl}
@@ -490,7 +511,18 @@ export default function PrintReportCards({ schoolCode }) {
                       </div>
                     </div>
 
-                    <div className="w-20 shrink-0"></div>
+                    {/* Official Verified Academic Badge */}
+                    <div className="w-20 shrink-0 flex flex-col items-center justify-center text-center">
+                      <div className="w-16 h-16 rounded-full border-2 border-slate-900 bg-amber-500/10 flex flex-col items-center justify-center p-1 shadow-2xs">
+                        <Award className="w-6 h-6 text-amber-600 mb-0.5" />
+                        <span className="text-[7.5px] font-black uppercase text-slate-900 leading-tight">
+                          OFFICIAL
+                        </span>
+                        <span className="text-[6.5px] font-bold text-slate-600">
+                          {rc.academicSession || academicSession}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Class & Academic Session Banner */}
@@ -652,58 +684,103 @@ export default function PrintReportCards({ schoolCode }) {
                             <th className="py-2.5 px-3 border-r-2 border-slate-900 text-center w-24">Max Marks</th>
                             <th className="py-2.5 px-3 border-r-2 border-slate-900 text-center w-24">Pass Marks</th>
                             <th className="py-2.5 px-3 border-r-2 border-slate-900 text-center w-28">Obtained</th>
-                            <th className="py-2.5 px-3 border-r-2 border-slate-900 text-center w-16">Grade</th>
-                            <th className="py-2.5 px-3 text-center w-20">Remarks</th>
+                            <th className="py-2.5 px-3 border-r-2 border-slate-900 text-center w-20">Grade</th>
+                            <th className="py-2.5 px-3 text-center w-24">Remarks</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y border-slate-900 font-semibold text-slate-900">
-                          {rc.marks?.map((m, mIdx) => (
-                            <tr key={mIdx} className="border-b border-slate-800">
-                              <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-bold">
-                                {mIdx + 1}
-                              </td>
-                              <td className="py-2 px-3 border-r-2 border-slate-900 font-bold">
-                                {m.subjectName}
-                              </td>
-                              <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono">
-                                {m.totalMarks}
-                              </td>
-                              <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono">
-                                {m.passingMarks}
-                              </td>
-                              <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono font-black">
-                                {m.isAbsent ? (
-                                  <span className="text-rose-600 font-bold">Absent</span>
-                                ) : (
-                                  m.obtainedMarks
-                                )}
-                              </td>
-                              <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-black">
-                                {m.grade}
-                              </td>
-                              <td className="py-2 px-3 text-center text-xs font-bold">
-                                {m.isPassed ? 'Pass' : 'Fail'}
-                              </td>
-                            </tr>
-                          ))}
+                          {(rc.marks || rc.subjects)?.map((m, mIdx) => {
+                            const tot = Number(m.totalMarks) || 100;
+                            const obt = m.isAbsent ? 0 : Number(m.obtainedMarks) || 0;
+                            const pass = Number(m.passingMarks) || 40;
+                            const isPassed = !m.isAbsent && obt >= pass;
+                            const pct = tot > 0 ? (obt / tot) * 100 : 0;
+                            let grade = m.grade;
+                            if (!grade) {
+                              if (pct >= 80) grade = 'A+';
+                              else if (pct >= 70) grade = 'A';
+                              else if (pct >= 60) grade = 'B';
+                              else if (pct >= 50) grade = 'C';
+                              else if (pct >= 40) grade = 'D';
+                              else grade = 'F';
+                            }
+
+                            return (
+                              <tr key={mIdx} className="border-b border-slate-800 hover:bg-slate-50/60 transition">
+                                <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-bold">
+                                  {mIdx + 1}
+                                </td>
+                                <td className="py-2 px-3 border-r-2 border-slate-900 font-bold uppercase tracking-tight">
+                                  {m.subjectName}
+                                </td>
+                                <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono font-bold text-slate-700">
+                                  {tot}
+                                </td>
+                                <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono font-medium text-slate-600">
+                                  {pass}
+                                </td>
+                                <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-mono font-black text-sm">
+                                  {m.isAbsent ? (
+                                    <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                                      Absent
+                                    </span>
+                                  ) : (
+                                    <span className={obt < pass ? 'text-rose-600 font-black' : 'text-slate-950 font-black'}>
+                                      {obt}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="py-2 px-3 border-r-2 border-slate-900 text-center font-black">
+                                  <span
+                                    className={`px-2 py-0.5 rounded text-xs font-black ${
+                                      grade === 'F'
+                                        ? 'text-rose-700 bg-rose-50 border border-rose-200'
+                                        : 'text-emerald-800 bg-emerald-50 border border-emerald-200'
+                                    }`}
+                                  >
+                                    {grade}
+                                  </span>
+                                </td>
+                                <td className="py-2 px-3 text-center text-xs font-bold">
+                                  {m.isAbsent ? (
+                                    <span className="text-rose-600">Absent</span>
+                                  ) : isPassed ? (
+                                    <span className="text-emerald-700 font-bold">Pass</span>
+                                  ) : (
+                                    <span className="text-rose-700 font-bold">Fail</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                         <tfoot>
                           <tr className="bg-slate-100 font-black border-t-2 border-slate-900 text-slate-900">
-                            <td colSpan={2} className="py-2.5 px-3 border-r-2 border-slate-900 text-right uppercase">
-                              Total Marks:
+                            <td colSpan={2} className="py-2.5 px-3 border-r-2 border-slate-900 text-right uppercase tracking-wider text-xs">
+                              TOTAL MARKS:
+                            </td>
+                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-black font-mono text-sm">
+                              {rc.totalMaxMarks || rc.totalMax || '—'}
+                            </td>
+                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-bold text-slate-500">—</td>
+                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-black font-mono text-base text-indigo-950">
+                              {rc.totalObtainedMarks !== undefined ? rc.totalObtainedMarks : rc.totalObtained !== undefined ? rc.totalObtained : '—'}
                             </td>
                             <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-black">
-                              {rc.totalMax}
-                            </td>
-                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center">—</td>
-                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-black">
-                              {rc.totalObtained}
-                            </td>
-                            <td className="py-2.5 px-3 border-r-2 border-slate-900 text-center font-black">
-                              {rc.grade}
+                              <span className="px-2 py-0.5 rounded bg-slate-900 text-white text-xs font-black">
+                                {rc.grade || '—'}
+                              </span>
                             </td>
                             <td className="py-2.5 px-3 text-center">
-                              {rc.percentage >= 40 ? 'PASSED' : 'FAILED'}
+                              {rc.percentage >= 40 ? (
+                                <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-300 font-black text-xs">
+                                  PASSED
+                                </span>
+                              ) : (
+                                <span className="text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-300 font-black text-xs">
+                                  FAILED
+                                </span>
+                              )}
                             </td>
                           </tr>
                         </tfoot>
@@ -712,19 +789,19 @@ export default function PrintReportCards({ schoolCode }) {
                   </div>
 
                   {/* Summary Metric Strip: Total, Percentage, Position, Grade */}
-                  <div className="grid grid-cols-4 gap-3 border-2 border-slate-900 rounded p-3 mb-6 bg-slate-50 text-center">
+                  <div className="grid grid-cols-4 gap-3 border-2 border-slate-900 rounded-lg p-3.5 mb-6 bg-slate-50/80 text-center shadow-2xs">
                     <div className="border-r-2 border-slate-900">
                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-600 block">Total Marks</span>
-                      <span className="text-sm md:text-base font-black text-slate-900">
+                      <span className="text-sm md:text-base font-black text-slate-900 font-mono">
                         {reportMode === 'consolidated'
                           ? `${rc.grandTotalObtained} / ${rc.grandTotalMax}`
-                          : `${rc.totalObtained} / ${rc.totalMax}`}
+                          : `${rc.totalObtainedMarks !== undefined ? rc.totalObtainedMarks : rc.totalObtained} / ${rc.totalMaxMarks || rc.totalMax}`}
                       </span>
                     </div>
 
                     <div className="border-r-2 border-slate-900">
                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-600 block">Percentage</span>
-                      <span className="text-sm md:text-base font-black text-slate-900">
+                      <span className="text-sm md:text-base font-black text-slate-900 font-mono">
                         {reportMode === 'consolidated' ? `${rc.overallPercentage}%` : `${rc.percentage}%`}
                       </span>
                     </div>
@@ -738,18 +815,18 @@ export default function PrintReportCards({ schoolCode }) {
 
                     <div>
                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-600 block">Class Position</span>
-                      <span className="text-sm md:text-base font-black text-slate-900">
-                        {rc.rank ? `${rc.rank}${rc.rank === 1 ? 'st' : rc.rank === 2 ? 'nd' : rc.rank === 3 ? 'rd' : 'th'}` : '—'}
+                      <span className="text-sm md:text-base font-black text-indigo-950">
+                        {rc.classPosition || (rc.rank ? `${rc.rank}${rc.rank === 1 ? 'st' : rc.rank === 2 ? 'nd' : rc.rank === 3 ? 'rd' : 'th'}` : '—')}
                       </span>
                     </div>
                   </div>
 
                   {/* Teacher Remarks & Grading Scale */}
                   <div className="grid grid-cols-3 gap-4 mb-6 text-xs">
-                    <div className="col-span-2 border-2 border-slate-900 rounded p-3">
+                    <div className="col-span-2 border-2 border-slate-900 rounded p-3 bg-white">
                       <span className="font-bold text-slate-900 block mb-1">Class Teacher Remarks:</span>
                       <p className="text-slate-800 italic font-medium leading-relaxed">
-                        {reportMode === 'consolidated'
+                        {rc.teacherRemarks || (reportMode === 'consolidated'
                           ? (rc.overallPercentage >= 80
                             ? 'Outstanding academic performance throughout the session. Demonstrates exceptional aptitude and leadership qualities.'
                             : rc.overallPercentage >= 60
@@ -757,12 +834,12 @@ export default function PrintReportCards({ schoolCode }) {
                             : 'Needs focused attention and improvement in foundational subjects for the upcoming academic year.')
                           : (rc.percentage >= 80
                             ? 'Excellent academic performance and commendable participation in class.'
-                            : 'Good effort. Keep working hard to achieve higher marks in the next term.')}
+                            : 'Good effort. Keep working hard to achieve higher marks in the next term.'))}
                       </p>
                     </div>
 
                     {/* Grading Scale Legend */}
-                    <div className="border-2 border-slate-900 rounded p-2 text-[10px] font-bold text-slate-800">
+                    <div className="border-2 border-slate-900 rounded p-2 text-[10px] font-bold text-slate-800 bg-white">
                       <span className="block border-b border-slate-400 pb-0.5 mb-1 text-center font-black">
                         GRADING SCALE
                       </span>
@@ -779,25 +856,50 @@ export default function PrintReportCards({ schoolCode }) {
                 </div>
 
                 {/* Signatures & Seal Block */}
-                <div className="pt-8 border-t-2 border-slate-900 flex items-end justify-between text-xs font-bold text-slate-900">
+                <div className="pt-6 border-t-2 border-slate-900 flex items-end justify-between text-xs font-bold text-slate-900 relative z-10">
                   <div className="text-center w-36">
-                    <div className="border-b-2 border-slate-900 pb-1 mb-1"></div>
+                    <div className="h-14 flex items-end justify-center mb-1">
+                      <div className="h-6"></div>
+                    </div>
+                    <div className="border-b-2 border-slate-900 mb-1"></div>
                     <span>Class Incharge</span>
                   </div>
 
                   <div className="text-center w-36">
-                    <div className="border-b-2 border-slate-900 pb-1 mb-1"></div>
+                    <div className="h-14 flex items-end justify-center mb-1">
+                      <div className="h-6"></div>
+                    </div>
+                    <div className="border-b-2 border-slate-900 mb-1"></div>
                     <span>Controller of Exams</span>
                   </div>
 
                   {/* Official Circular Seal */}
-                  <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-[9px] font-black uppercase text-slate-500 text-center leading-tight">
-                    School Seal
+                  <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-700 bg-white flex flex-col items-center justify-center text-[8px] font-black uppercase text-slate-500 text-center leading-tight p-1 shadow-2xs">
+                    <School className="w-4 h-4 text-slate-400 mb-0.5" />
+                    <span>School</span>
+                    <span>Seal</span>
                   </div>
 
-                  <div className="text-center w-36">
-                    <div className="border-b-2 border-slate-900 pb-1 mb-1"></div>
-                    <span>{schoolProfile.principalTitle || 'Principal'}</span>
+                  {/* Principal Signature Picture */}
+                  <div className="text-center w-44 flex flex-col items-center">
+                    <div className="h-14 flex items-end justify-center mb-1">
+                      {schoolProfile.principalSignatureUrl ? (
+                        <img
+                          src={schoolProfile.principalSignatureUrl}
+                          alt="Principal Signature"
+                          className="max-h-14 max-w-[150px] object-contain"
+                          crossOrigin="anonymous"
+                        />
+                      ) : (
+                        <div className="text-[11px] font-serif italic text-slate-400 font-normal">
+                          {schoolProfile.principalTitle || 'Principal'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="w-full border-b-2 border-slate-900 mb-1"></div>
+                    <span className="font-bold text-xs uppercase text-slate-900">
+                      {schoolProfile.principalTitle || 'Principal'}
+                    </span>
                   </div>
                 </div>
               </div>

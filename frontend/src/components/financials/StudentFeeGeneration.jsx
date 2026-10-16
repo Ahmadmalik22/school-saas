@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import confetti from 'canvas-confetti';
@@ -9,7 +10,30 @@ import {
 } from 'lucide-react';
 
 export default function StudentFeeGeneration({ schoolCode, setActiveSubModule }) {
-  const { classNames, getSectionsForClass } = useAcademicClasses(schoolCode);
+  const navigate = useNavigate();
+  const { classNames = [], getSectionsForClass } = useAcademicClasses(schoolCode);
+
+  // Natural Class Sorting Helper
+  const getClassWeight = (name = '') => {
+    const s = String(name).toLowerCase().trim();
+    if (s.includes('play')) return 1;
+    if (s.includes('nursery')) return 2;
+    if (s.includes('prep') || s.includes('kg')) return 3;
+    const match = s.match(/\d+/);
+    if (match) return 10 + parseInt(match[0], 10);
+    return 100;
+  };
+
+  const sortedClassNames = useMemo(() => {
+    return [...(classNames || [])].sort((a, b) => getClassWeight(a) - getClassWeight(b));
+  }, [classNames]);
+
+  // Clean Class Name formatting (strips redundant "Class" prefix)
+  const formatClassName = (name) => {
+    if (!name) return '';
+    const trimmed = name.trim();
+    return trimmed.startsWith('Class') ? trimmed : `Class ${trimmed}`;
+  };
 
   // Filter State
   const currentMonth = (() => {
@@ -33,6 +57,10 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [issueDate, setIssueDate] = useState(defaultIssueDate);
   const [dueDate, setDueDate] = useState(defaultDueDate);
+
+  // Generation Status Tracking State for Selected Month
+  const [generationStatus, setGenerationStatus] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   // Data & State
   const [vouchers, setVouchers] = useState([]);
@@ -65,13 +93,49 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
 
   // Sync initial class
   useEffect(() => {
-    if (classNames && classNames.length > 0 && !selectedClass) {
-      const first = classNames[0];
+    if (sortedClassNames && sortedClassNames.length > 0 && !selectedClass) {
+      const first = sortedClassNames[0];
       setSelectedClass(first);
       const secs = getSectionsForClass(first);
       setSelectedSection(secs[0] || 'A');
     }
-  }, [classNames, selectedClass, getSectionsForClass]);
+  }, [sortedClassNames, selectedClass, getSectionsForClass]);
+
+  // Fetch Month Generation Status for all classes
+  const fetchGenerationStatus = async () => {
+    if (!schoolCode || !selectedMonth) return;
+    setStatusLoading(true);
+    try {
+      const res = await api.get('/fees/month-status', {
+        params: { schoolCode, monthYear: selectedMonth },
+      });
+      if (res.data?.success) {
+        setGenerationStatus(res.data.data);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch monthly generation status:', err);
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGenerationStatus();
+  }, [schoolCode, selectedMonth]);
+
+  const isClassGenerated = (c) => {
+    if (!generationStatus?.generatedByClass) return false;
+    const data = generationStatus.generatedByClass[c];
+    return Boolean(data && data.voucherCount > 0);
+  };
+
+  const getClassVoucherCount = (c) => {
+    return generationStatus?.generatedByClass?.[c]?.voucherCount || 0;
+  };
+
+  const getClassStudentCount = (c) => {
+    return generationStatus?.studentsByClass?.[c] || 0;
+  };
 
   // Fetch Existing Fee Sheet
   const fetchFeeSheet = async () => {
@@ -133,6 +197,7 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
         });
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
         fetchFeeSheet();
+        fetchGenerationStatus();
       }
     } catch (err) {
       console.error(err);
@@ -238,19 +303,112 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
 
         <div className="flex flex-wrap items-center gap-2.5">
           <button
-            onClick={() => setActiveSubModule('student_fee_management')}
-            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl font-bold text-xs flex items-center gap-2 transition shadow-sm"
+            onClick={() => {
+              if (typeof setActiveSubModule === 'function') {
+                setActiveSubModule('student_fee_management');
+              } else {
+                navigate('/financials/fee-management');
+              }
+            }}
+            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl font-bold text-xs flex items-center gap-2 transition shadow-sm cursor-pointer"
           >
             <span>Fee Management & Counter</span>
             <ArrowRight className="w-3.5 h-3.5 text-[#ffa000]" />
           </button>
           <button
-            onClick={() => setActiveSubModule('fee_vouchers_print')}
-            className="px-4 py-2.5 bg-[#ffa000] hover:bg-amber-500 text-slate-950 font-black rounded-xl text-xs flex items-center gap-2 transition shadow-md"
+            onClick={() => {
+              if (typeof setActiveSubModule === 'function') {
+                setActiveSubModule('fee_vouchers_print');
+              } else {
+                navigate('/financials/fee-vouchers');
+              }
+            }}
+            className="px-4 py-2.5 bg-[#ffa000] hover:bg-amber-500 text-slate-950 font-black rounded-xl text-xs flex items-center gap-2 transition shadow-md cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Print 4-in-1 Vouchers</span>
           </button>
+        </div>
+      </div>
+
+      {/* Class Fee Generation Status Tracker for Selected Month */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-amber-500" />
+            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              Classes Fee Generation Status ({selectedMonth})
+            </h2>
+            <span className="text-[11px] text-slate-500">
+              • Click any class below to quickly select and manage
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] font-bold">
+            <span className="flex items-center gap-1.5 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Generated</span>
+            </span>
+            <span className="flex items-center gap-1.5 text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Pending</span>
+            </span>
+            <button
+              type="button"
+              onClick={fetchGenerationStatus}
+              disabled={statusLoading}
+              title="Refresh generation status"
+              className="text-slate-400 hover:text-slate-700 p-1 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition ml-1"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${statusLoading ? 'animate-spin text-amber-500' : ''}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Interactive Class Pills */}
+        <div className="flex flex-wrap gap-2 pt-1">
+          {sortedClassNames.map((c) => {
+            const gen = isClassGenerated(c);
+            const count = getClassVoucherCount(c);
+            const isSelected = selectedClass === c;
+
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => {
+                  setSelectedClass(c);
+                  const secs = getSectionsForClass(c);
+                  setSelectedSection(secs[0] || 'A');
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer border shadow-2xs ${
+                  isSelected
+                    ? 'ring-2 ring-amber-500 font-black scale-[1.02]'
+                    : 'hover:scale-[1.02]'
+                } ${
+                  gen
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100'
+                    : 'bg-amber-50/70 text-amber-900 border-amber-300 hover:bg-amber-100'
+                }`}
+              >
+                {gen ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                ) : (
+                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                )}
+                <span>{formatClassName(c)}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold ${
+                    gen
+                      ? 'bg-emerald-200 text-emerald-950'
+                      : 'bg-amber-200 text-amber-950'
+                  }`}
+                >
+                  {gen ? `${count} Vouchers` : 'Pending'}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -267,11 +425,15 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
             }}
             className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800 focus:ring-2 focus:ring-amber-500 cursor-pointer"
           >
-            {classNames.map((c) => (
-              <option key={c} value={c}>
-                Class {c}
-              </option>
-            ))}
+            {sortedClassNames.map((c) => {
+              const gen = isClassGenerated(c);
+              const count = getClassVoucherCount(c);
+              return (
+                <option key={c} value={c}>
+                  {formatClassName(c)} {gen ? `(✓ Generated: ${count})` : '(⏳ Pending)'}
+                </option>
+              );
+            })}
           </select>
         </div>
 

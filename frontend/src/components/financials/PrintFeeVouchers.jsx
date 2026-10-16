@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import {
@@ -11,7 +11,28 @@ import SchoolLogo from '../common/SchoolLogo';
 
 export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
   const { schoolName, schoolProfile, schoolLogo } = useAuth();
-  const { classNames, getSectionsForClass } = useAcademicClasses(schoolCode);
+  const { classNames = [], getSectionsForClass } = useAcademicClasses(schoolCode);
+
+  // Natural Class Sorting Helper
+  const getClassWeight = (name = '') => {
+    const s = String(name).toLowerCase().trim();
+    if (s.includes('play')) return 1;
+    if (s.includes('nursery')) return 2;
+    if (s.includes('prep') || s.includes('kg')) return 3;
+    const match = s.match(/\d+/);
+    if (match) return 10 + parseInt(match[0], 10);
+    return 100;
+  };
+
+  const sortedClassNames = useMemo(() => {
+    return [...(classNames || [])].sort((a, b) => getClassWeight(a) - getClassWeight(b));
+  }, [classNames]);
+
+  const formatClassName = (name) => {
+    if (!name) return '';
+    const trimmed = name.trim();
+    return trimmed.startsWith('Class') ? trimmed : `Class ${trimmed}`;
+  };
 
   const currentMonth = (() => {
     const d = new Date();
@@ -38,13 +59,13 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
 
   // Initial Class sync
   useEffect(() => {
-    if (classNames && classNames.length > 0 && !selectedClass) {
-      const first = classNames[0];
+    if (sortedClassNames && sortedClassNames.length > 0 && !selectedClass) {
+      const first = sortedClassNames[0];
       setSelectedClass(first);
       const secs = getSectionsForClass(first);
       setSelectedSection(secs[0] || 'A');
     }
-  }, [classNames, selectedClass, getSectionsForClass]);
+  }, [sortedClassNames, selectedClass, getSectionsForClass]);
 
   // Fetch Vouchers for Printing
   const fetchPrintVouchers = async () => {
@@ -243,9 +264,9 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
               }}
               className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800 cursor-pointer focus:ring-2 focus:ring-amber-500"
             >
-              {classNames.map((c) => (
+              {sortedClassNames.map((c) => (
                 <option key={c} value={c}>
-                  Class {c}
+                  {formatClassName(c)}
                 </option>
               ))}
             </select>
@@ -412,14 +433,14 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
 
                   {/* DUAL SLIP CONTAINER (Bank/School Copy on Left, Parent Copy on Right) */}
                   <div className="grid grid-cols-2 gap-2 h-full relative">
-                    {/* Perforation Divider Line */}
-                    <div
-                      className="absolute inset-y-0 left-1/2 -translate-x-1/2 border-r border-dashed border-slate-400 flex flex-col items-center justify-between text-[6.5px] text-slate-400 pointer-events-none z-10"
-                      style={{ padding: '2px 0' }}
-                    >
-                      <Scissors className="w-2.5 h-2.5 -rotate-90 text-slate-600" />
-                      <span className="rotate-90 tracking-widest uppercase font-mono font-bold text-slate-500">TEAR HERE</span>
-                      <Scissors className="w-2.5 h-2.5 -rotate-90 text-slate-600" />
+                    {/* Perforation Divider Line - Dead Center 50% between vouchers */}
+                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 pointer-events-none z-10 flex flex-col items-center justify-between py-1">
+                      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 border-l border-dashed border-slate-400 w-0 h-full"></div>
+                      <Scissors className="w-2.5 h-2.5 -rotate-90 text-slate-500 bg-white z-10 shrink-0" />
+                      <span className="rotate-90 tracking-widest uppercase font-mono font-bold text-[6px] text-slate-400 bg-white py-1 z-10 whitespace-nowrap select-none">
+                        CUT HERE
+                      </span>
+                      <Scissors className="w-2.5 h-2.5 -rotate-90 text-slate-500 bg-white z-10 shrink-0" />
                     </div>
 
                     {/* ======================= LEFT: SCHOOL / BANK COPY ======================= */}

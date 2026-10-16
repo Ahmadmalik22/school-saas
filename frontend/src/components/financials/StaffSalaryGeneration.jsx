@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import confetti from 'canvas-confetti';
 import {
@@ -9,6 +10,7 @@ import {
 import { exportStaffPayrollToExcel } from '../../utils/excelExporter';
 
 export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }) {
+  const navigate = useNavigate();
   const currentMonth = (() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -221,8 +223,14 @@ export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setActiveSubModule('staff_attendance_register')}
-            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl font-bold text-xs flex items-center gap-2 transition"
+            onClick={() => {
+              if (typeof setActiveSubModule === 'function') {
+                setActiveSubModule('staff_attendance_register');
+              } else {
+                navigate('/attendance/staff-register');
+              }
+            }}
+            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer"
           >
             <span>View Attendance Register</span>
             <ArrowRight className="w-3.5 h-3.5 text-[#ffa000]" />

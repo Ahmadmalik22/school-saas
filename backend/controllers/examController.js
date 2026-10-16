@@ -675,7 +675,8 @@ export const getSingleTermReportCards = async (req, res) => {
       .sort({ rollNumber: 1 })
       .lean();
 
-    const marksRecords = await StudentExamMarks.find({
+    // Resilient marks lookup (checks with session, falls back without session if none found)
+    let marksRecords = await StudentExamMarks.find({
       schoolCode,
       academicSession,
       termName,
@@ -683,40 +684,94 @@ export const getSingleTermReportCards = async (req, res) => {
       section,
     }).lean();
 
+    if (!marksRecords || marksRecords.length === 0) {
+      marksRecords = await StudentExamMarks.find({
+        schoolCode,
+        termName,
+        className,
+        section,
+      }).lean();
+    }
+
     const marksMap = new Map();
     marksRecords.forEach((m) => marksMap.set(String(m.studentId), m));
 
     const getPositionSuffix = (num) => {
-      if (num === 1) return '1st';
-      if (num === 2) return '2nd';
-      if (num === 3) return '3rd';
-      return `${num}th`;
+      if (!num || isNaN(num)) return '-';
+      const n = Number(num);
+      if (n === 1) return '1st';
+      if (n === 2) return '2nd';
+      if (n === 3) return '3rd';
+      return `${n}th`;
     };
 
     const reportCards = students.map((std) => {
       const existing = marksMap.get(String(std._id));
 
-      const subMarks = subjects.map((sub) => {
-        const found = existing?.subjectMarks?.find((sm) => sm.subjectName === sub.subjectName);
-        const obt = found ? found.obtainedMarks : 0;
-        const pass = found ? found.passingMarks : sub.passingMarks;
-        const tot = found ? found.totalMarks : sub.totalMarks;
-        const isAbsent = found ? Boolean(found.isAbsent) : false;
-        const isPassed = !isAbsent && obt >= pass;
+      let subMarks = [];
+      if (existing && Array.isArray(existing.subjectMarks) && existing.subjectMarks.length > 0) {
+        // Direct use of saved subjectMarks (preserves exact entered marks)
+        subMarks = existing.subjectMarks.map((sm) => {
+          const tot = Number(sm.totalMarks) || 100;
+          const obt = sm.isAbsent ? 0 : Number(sm.obtainedMarks) || 0;
+          const pass = Number(sm.passingMarks) || 40;
+          const isPassed = !sm.isAbsent && obt >= pass;
+          const pct = tot > 0 ? (obt / tot) * 100 : 0;
+          let subGrade = 'F';
+          if (pct >= 80) subGrade = 'A+';
+          else if (pct >= 70) subGrade = 'A';
+          else if (pct >= 60) subGrade = 'B';
+          else if (pct >= 50) subGrade = 'C';
+          else if (pct >= 40) subGrade = 'D';
 
-        return {
-          subjectName: sub.subjectName,
-          totalMarks: tot,
-          obtainedMarks: obt,
-          passingMarks: pass,
-          isAbsent,
-          remarks: isAbsent ? 'Absent' : isPassed ? 'Pass' : 'Fail',
-        };
-      });
+          return {
+            subjectName: sm.subjectName,
+            totalMarks: tot,
+            obtainedMarks: obt,
+            passingMarks: pass,
+            isAbsent: Boolean(sm.isAbsent),
+            grade: subGrade,
+            isPassed,
+            remarks: sm.remarks || (sm.isAbsent ? 'Absent' : isPassed ? 'Pass' : 'Fail'),
+          };
+        });
+      } else {
+        // Fallback to class subjects structure with 0 marks
+        subMarks = subjects.map((sub) => {
+          const found = existing?.subjectMarks?.find(
+            (sm) => (sm.subjectName || '').toLowerCase().trim() === (sub.subjectName || '').toLowerCase().trim()
+          );
+          const obt = found ? Number(found.obtainedMarks) || 0 : 0;
+          const pass = found ? Number(found.passingMarks) || sub.passingMarks : sub.passingMarks;
+          const tot = found ? Number(found.totalMarks) || sub.totalMarks : sub.totalMarks;
+          const isAbsent = found ? Boolean(found.isAbsent) : false;
+          const isPassed = !isAbsent && obt >= pass;
+          const pct = tot > 0 ? (obt / tot) * 100 : 0;
+          let subGrade = 'F';
+          if (pct >= 80) subGrade = 'A+';
+          else if (pct >= 70) subGrade = 'A';
+          else if (pct >= 60) subGrade = 'B';
+          else if (pct >= 50) subGrade = 'C';
+          else if (pct >= 40) subGrade = 'D';
 
-      const maxM = existing ? existing.totalMaxMarks : subjects.reduce((s, x) => s + x.totalMarks, 0);
-      const obtM = existing ? existing.totalObtainedMarks : 0;
-      const pct = existing ? existing.percentage : (maxM > 0 ? Number(((obtM / maxM) * 100).toFixed(2)) : 0);
+          return {
+            subjectName: sub.subjectName,
+            totalMarks: tot,
+            obtainedMarks: obt,
+            passingMarks: pass,
+            isAbsent,
+            grade: subGrade,
+            isPassed,
+            remarks: isAbsent ? 'Absent' : isPassed ? 'Pass' : 'Fail',
+          };
+        });
+      }
+
+      const maxM = existing && existing.totalMaxMarks ? existing.totalMaxMarks : subMarks.reduce((s, x) => s + x.totalMarks, 0);
+      const obtM = existing && existing.totalObtainedMarks !== undefined ? existing.totalObtainedMarks : subMarks.reduce((s, x) => s + (x.isAbsent ? 0 : x.obtainedMarks), 0);
+      const pct = existing && existing.percentage !== undefined ? existing.percentage : (maxM > 0 ? Number(((obtM / maxM) * 100).toFixed(2)) : 0);
+      const grade = existing && existing.grade ? existing.grade : (pct >= 80 ? 'A+' : pct >= 70 ? 'A' : pct >= 60 ? 'B' : pct >= 50 ? 'C' : pct >= 40 ? 'D' : 'F');
+      const rankNum = existing ? existing.classRank : undefined;
 
       return {
         studentId: std._id,
@@ -730,12 +785,17 @@ export const getSingleTermReportCards = async (req, res) => {
         termName,
         academicSession,
         subjects: subMarks,
+        marks: subMarks, // Alias for frontend compatibility
         totalMaxMarks: maxM,
+        totalMax: maxM, // Alias
         totalObtainedMarks: obtM,
+        totalObtained: obtM, // Alias
         percentage: pct,
-        grade: existing ? existing.grade : (pct >= 80 ? 'A+' : pct >= 70 ? 'A' : pct >= 60 ? 'B' : pct >= 50 ? 'C' : pct >= 40 ? 'D' : 'F'),
+        grade,
+        rank: rankNum,
+        classRank: rankNum,
         classPosition: existing ? getPositionSuffix(existing.classRank) : '-',
-        teacherRemarks: existing ? existing.teacherRemarks : (pct >= 40 ? 'Promoted' : 'Needs Improvement'),
+        teacherRemarks: existing && existing.teacherRemarks ? existing.teacherRemarks : (pct >= 40 ? 'Promoted' : 'Needs Improvement'),
       };
     });
 

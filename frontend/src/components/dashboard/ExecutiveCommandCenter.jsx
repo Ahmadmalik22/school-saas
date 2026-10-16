@@ -442,17 +442,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
               )}
             </button>
 
-            {/* Live Sync Status Badge */}
-            <div
-              title="Real-time event sync: updates instantly whenever attendance is marked, fee is submitted, or expenses are added."
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-slate-800/90 text-emerald-400 border border-slate-700 shadow-sm select-none"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>Live Sync</span>
-            </div>
-
             {/* Manual Refresh Button */}
             <button
               type="button"

@@ -2,6 +2,7 @@ import express from 'express';
 import {
   generateClassFee,
   getClassFeeSheet,
+  getMonthlyGenerationStatus,
   updateFeeVoucher,
   collectCashPayment,
   bulkFeeRevision,
@@ -14,6 +15,7 @@ const router = express.Router();
 // Student Fee Routes
 router.post('/generate', generateClassFee);
 router.get('/sheet', getClassFeeSheet);
+router.get('/month-status', getMonthlyGenerationStatus);
 router.put('/voucher/:id', updateFeeVoucher);
 router.post('/voucher/:id/collect-cash', collectCashPayment);
 router.post('/bulk-revision', bulkFeeRevision);

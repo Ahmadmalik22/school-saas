@@ -789,3 +789,101 @@ export const collectFamilyCashPayment = async (req, res) => {
     });
   }
 };
+
+/**
+ * Get Monthly Fee Generation Status Summary across all classes for a given month.
+ * Returns breakdown of which classes/sections have vouchers generated (and how many),
+ * and which classes are still pending.
+ */
+export const getMonthlyGenerationStatus = async (req, res) => {
+  try {
+    const { schoolCode, monthYear } = req.query;
+
+    if (!schoolCode || !monthYear) {
+      return res.status(400).json({
+        success: false,
+        message: 'School code and month/year are required.',
+      });
+    }
+
+    // 1. Group fee vouchers generated for this month by className and section
+    const generatedAgg = await FeeVoucher.aggregate([
+      { $match: { schoolCode, monthYear } },
+      {
+        $group: {
+          _id: { className: '$className', section: '$section' },
+          voucherCount: { $sum: 1 },
+          paidCount: {
+            $sum: { $cond: [{ $eq: ['$status', 'PAID'] }, 1, 0] },
+          },
+          totalPayable: { $sum: '$totalPayableWithinDueDate' },
+          totalCollected: { $sum: '$paidAmount' },
+        },
+      },
+    ]);
+
+    // 2. Also group active students by className and section
+    const studentAgg = await Student.aggregate([
+      {
+        $match: {
+          schoolCode,
+          status: { $ne: 'EXPELLED' },
+        },
+      },
+      {
+        $group: {
+          _id: { className: '$className', section: '$section' },
+          studentCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Build lookup maps
+    const generatedByClassSection = {};
+    const generatedByClass = {};
+
+    for (const g of generatedAgg) {
+      const cls = g._id.className;
+      const sec = g._id.section || 'ALL';
+      const key = `${cls}__${sec}`;
+      generatedByClassSection[key] = g;
+
+      if (!generatedByClass[cls]) {
+        generatedByClass[cls] = { voucherCount: 0, paidCount: 0, totalPayable: 0, totalCollected: 0 };
+      }
+      generatedByClass[cls].voucherCount += g.voucherCount;
+      generatedByClass[cls].paidCount += g.paidCount;
+      generatedByClass[cls].totalPayable += g.totalPayable;
+      generatedByClass[cls].totalCollected += g.totalCollected;
+    }
+
+    const studentsByClassSection = {};
+    const studentsByClass = {};
+
+    for (const s of studentAgg) {
+      const cls = s._id.className;
+      if (!cls) continue;
+      const sec = s._id.section || 'ALL';
+      const key = `${cls}__${sec}`;
+      studentsByClassSection[key] = s.studentCount;
+      studentsByClass[cls] = (studentsByClass[cls] || 0) + s.studentCount;
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        generatedByClassSection,
+        generatedByClass,
+        studentsByClassSection,
+        studentsByClass,
+        totalVouchersThisMonth: generatedAgg.reduce((acc, g) => acc + g.voucherCount, 0),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching monthly fee generation status:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error while fetching fee generation status.',
+    });
+  }
+};

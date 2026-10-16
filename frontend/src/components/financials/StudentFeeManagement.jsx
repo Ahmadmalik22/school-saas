@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import { broadcastDataChange } from '../../utils/realtimeEvents';
@@ -11,7 +11,28 @@ import {
 import { exportFeeSheetToExcel } from '../../utils/excelExporter';
 
 export default function StudentFeeManagement({ schoolCode, setActiveSubModule }) {
-  const { classNames, getSectionsForClass } = useAcademicClasses(schoolCode);
+  const { classNames = [], getSectionsForClass } = useAcademicClasses(schoolCode);
+
+  // Natural Class Sorting Helper
+  const getClassWeight = (name = '') => {
+    const s = String(name).toLowerCase().trim();
+    if (s.includes('play')) return 1;
+    if (s.includes('nursery')) return 2;
+    if (s.includes('prep') || s.includes('kg')) return 3;
+    const match = s.match(/\d+/);
+    if (match) return 10 + parseInt(match[0], 10);
+    return 100;
+  };
+
+  const sortedClassNames = useMemo(() => {
+    return [...(classNames || [])].sort((a, b) => getClassWeight(a) - getClassWeight(b));
+  }, [classNames]);
+
+  const formatClassName = (name) => {
+    if (!name) return '';
+    const trimmed = name.trim();
+    return trimmed.startsWith('Class') ? trimmed : `Class ${trimmed}`;
+  };
 
   const currentMonth = (() => {
     const d = new Date();
@@ -57,14 +78,14 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
 
   // Initial Class sync
   useEffect(() => {
-    if (classNames && classNames.length > 0 && !selectedClass) {
-      const first = classNames[0];
+    if (sortedClassNames && sortedClassNames.length > 0 && !selectedClass) {
+      const first = sortedClassNames[0];
       setSelectedClass(first);
       setRevClass(first);
       const secs = getSectionsForClass(first);
       setSelectedSection(secs[0] || 'A');
     }
-  }, [classNames, selectedClass, getSectionsForClass]);
+  }, [sortedClassNames, selectedClass, getSectionsForClass]);
 
   // Fetch Fee Sheet for Counter
   const fetchVouchers = async () => {
@@ -308,9 +329,9 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
                 }}
                 className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800 cursor-pointer focus:ring-2 focus:ring-amber-500"
               >
-                {classNames.map((c) => (
+                {sortedClassNames.map((c) => (
                   <option key={c} value={c}>
-                    Class {c}
+                    {formatClassName(c)}
                   </option>
                 ))}
               </select>
@@ -580,9 +601,9 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
                   onChange={(e) => setRevClass(e.target.value)}
                   className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800"
                 >
-                  {classNames.map((c) => (
+                  {sortedClassNames.map((c) => (
                     <option key={c} value={c}>
-                      Class {c}
+                      {formatClassName(c)}
                     </option>
                   ))}
                 </select>
