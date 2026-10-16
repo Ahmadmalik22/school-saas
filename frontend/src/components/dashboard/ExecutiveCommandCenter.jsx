@@ -77,9 +77,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
   // 1. ALL HOOKS / STATE DECLARED FIRST (No temporal dead zone)
   const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [loading, setLoading] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
-  const [secondsSinceLastRefresh, setSecondsSinceLastRefresh] = useState(0);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
   // Privacy Mode (Persisted in localStorage)
@@ -166,12 +163,10 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
   const isTodaySelected = selectedDate === getTodayString();
 
-  // 3. REAL-TIME DATA FETCHING (Supports silent background sync)
+  // 3. REAL-TIME DATA FETCHING (Pure Event-Driven: Silent background refresh without blinking)
   const fetchDashboardData = useCallback(async (options = {}) => {
     const { silent = false } = options;
-    if (silent) {
-      setIsSyncing(true);
-    } else {
+    if (!silent) {
       setLoading(true);
     }
 
@@ -185,26 +180,15 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
       if (res.data?.success) {
         setDashboardData(res.data);
         setLastRefreshed(new Date());
-        setSecondsSinceLastRefresh(0);
       }
     } catch (err) {
       console.error('Failed to fetch dashboard summary:', err);
     } finally {
-      if (silent) {
-        setIsSyncing(false);
-      } else {
+      if (!silent) {
         setLoading(false);
       }
     }
   }, [schoolCode, selectedDate]);
-
-  // Tick seconds since last refresh counter
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsSinceLastRefresh((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // 1. Initial Load & on selectedDate / schoolCode change
   useEffect(() => {
@@ -212,7 +196,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
   }, [fetchDashboardData]);
 
   // 2. Real-Time Cross-Tab & Cross-Component Instant Sync
-  // Fires IMMEDIATELY (0ms delay) when QR scan, attendance, or fee payment occurs
+  // Pure Event-Driven: Only fires when an actual attendance, fee, expense, or student action occurs
   useEffect(() => {
     const unsubscribe = subscribeToDataChanges(() => {
       fetchDashboardData({ silent: true });
@@ -220,7 +204,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
     return unsubscribe;
   }, [fetchDashboardData]);
 
-  // 3. Tab Focus & Visibility Event (Instant refresh when admin returns to tab)
+  // 3. Tab Focus & Visibility Event (Silent refresh once when admin returns to tab)
   useEffect(() => {
     const handleVisibilityOrFocus = () => {
       if (document.visibilityState === 'visible') {
@@ -235,19 +219,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
       document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
     };
   }, [fetchDashboardData]);
-
-  // 4. Smart Auto-Polling (Polls every 8 seconds while viewing Today and tab is active)
-  useEffect(() => {
-    if (!autoSyncEnabled || !isTodaySelected) return;
-
-    const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        fetchDashboardData({ silent: true });
-      }
-    }, 8000); // 8-second rapid auto-sync
-
-    return () => clearInterval(interval);
-  }, [autoSyncEnabled, isTodaySelected, fetchDashboardData]);
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -471,38 +442,16 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
               )}
             </button>
 
-            {/* Live Auto-Sync Status & Toggle Badge */}
-            <button
-              type="button"
-              onClick={() => setAutoSyncEnabled((prev) => !prev)}
-              title={
-                autoSyncEnabled
-                  ? 'Auto-Sync is ACTIVE (refreshing every 8s). Click to pause.'
-                  : 'Auto-Sync is PAUSED. Click to resume live updates.'
-              }
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer border shadow-sm ${
-                autoSyncEnabled
-                  ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80 ring-1 ring-emerald-500/30'
-                  : 'bg-slate-800/90 text-slate-400 border-slate-700 hover:bg-slate-800'
-              }`}
+            {/* Live Sync Status Badge */}
+            <div
+              title="Real-time event sync: updates instantly whenever attendance is marked, fee is submitted, or expenses are added."
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-slate-800/90 text-emerald-400 border border-slate-700 shadow-sm select-none"
             >
               <span className="relative flex h-2 w-2">
-                {autoSyncEnabled && (
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                )}
-                <span
-                  className={`relative inline-flex rounded-full h-2 w-2 ${
-                    autoSyncEnabled ? 'bg-emerald-500' : 'bg-slate-500'
-                  }`}
-                ></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span>{isSyncing ? 'Syncing...' : autoSyncEnabled ? 'Live Sync' : 'Sync Paused'}</span>
-              {autoSyncEnabled && (
-                <span className="text-[10px] text-emerald-400/80 font-mono">
-                  ({secondsSinceLastRefresh < 5 ? 'Just now' : `${secondsSinceLastRefresh}s`})
-                </span>
-              )}
-            </button>
+              <span>Live Sync</span>
+            </div>
 
             {/* Manual Refresh Button */}
             <button
@@ -514,7 +463,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
             >
               <RefreshCw
                 className={`w-4 h-4 ${
-                  loading || isSyncing ? 'animate-spin text-[#ffa000]' : ''
+                  loading ? 'animate-spin text-[#ffa000]' : ''
                 }`}
               />
             </button>
