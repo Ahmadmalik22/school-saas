@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import {
   QrCode,
   Camera,
@@ -381,6 +382,9 @@ export default function QrAttendanceScanner({ schoolCode }) {
           playSuccessChime();
           triggerVibration([200, 100, 200]);
           speakAnnouncement(`Attendance marked! ${student.fullName}`);
+
+          // Broadcast real-time update to Dashboard instantly
+          broadcastDataChange('attendance', { studentId: student.studentId });
 
           // Add to live feed top
           setTodayPresents((prev) => [

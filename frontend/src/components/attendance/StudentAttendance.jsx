@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   Calendar, Check, X, Search, QrCode,
@@ -179,6 +180,7 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
         confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
         setToast({ type: 'success', message: res.data.message });
         setSheetData(res.data.data);
+        broadcastDataChange('attendance');
       }
     } catch (err) {
       console.error(err);

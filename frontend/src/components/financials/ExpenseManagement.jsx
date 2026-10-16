@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   Wallet, Plus, Search, Calendar, RefreshCw, CheckCircle2,
@@ -146,6 +147,7 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
           remarks: '',
         }));
         fetchLedger();
+        broadcastDataChange('expense');
       }
     } catch (err) {
       console.error(err);

@@ -14,17 +14,21 @@ export const getSchoolProfile = async (req, res) => {
     let profile = await SchoolProfile.findOne({ schoolCode: code }).lean();
 
     if (!profile) {
-      profile = await SchoolProfile.create({
-        schoolCode: code,
-        schoolName: code === 'SCH-101' ? 'ISLAMABAD MODEL COLLEGE FOR BOYS' : `Akkhor Model School (${code})`,
-        address: 'PAKISTAN TOWN, ISLAMABAD',
-        tagline: 'Excellence in Education & Character Building',
-        phone: '+92 51 9283741',
-        email: 'info@school.edu.pk',
-        affiliation: 'Affiliated with Federal Board (FBISE)',
-        principalTitle: 'Principal',
-        vicePrincipalTitle: 'Vice Principal',
-        activeSession: '2025-2026',
+      // Do NOT create a record in the database on a GET request! Return in-memory fallback.
+      return res.status(200).json({
+        success: true,
+        data: {
+          schoolCode: code,
+          schoolName: code === 'SCH-101' ? 'ISLAMABAD MODEL COLLEGE FOR BOYS' : `School (${code})`,
+          address: 'PAKISTAN TOWN, ISLAMABAD',
+          tagline: 'Excellence in Education & Character Building',
+          phone: '+92 51 9283741',
+          email: 'info@school.edu.pk',
+          affiliation: 'Affiliated with Federal Board (FBISE)',
+          principalTitle: 'Principal',
+          vicePrincipalTitle: 'Vice Principal',
+          activeSession: '2025-2026',
+        },
       });
     }
 

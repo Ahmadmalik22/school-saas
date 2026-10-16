@@ -17,8 +17,13 @@ export const getSessions = async (req, res) => {
       .sort({ startYear: -1, sessionName: -1 })
       .lean();
 
-    // Auto-seed default sessions if empty
+    // Auto-seed default sessions if empty AND school genuinely exists in SchoolProfile
     if (!sessions || sessions.length === 0) {
+      const schoolExists = await SchoolProfile.exists({ schoolCode: code });
+      if (!schoolExists) {
+        return res.status(200).json({ success: true, data: [], activeSession: null });
+      }
+
       const defaults = [
         {
           schoolCode: code,

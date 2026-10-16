@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import {
@@ -152,10 +152,28 @@ export default function ManageClasses({ schoolCode }) {
     }
   };
 
-  // Filter classes
-  const filteredClasses = classes.filter((cls) =>
-    cls.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Natural sorting helper (Nursery, Prep, Class 1, Class 2, ... Class 10)
+  const getClassWeight = (name = '') => {
+    const lower = name.toLowerCase().trim();
+    if (lower.includes('pg') || lower.includes('play')) return 0.05;
+    if (lower.includes('nursery')) return 0.1;
+    if (lower.includes('prep') || lower.includes('kg')) return 0.2;
+    const match = lower.match(/\d+/);
+    if (match) return parseInt(match[0], 10);
+    return 999;
+  };
+
+  // Filter and sort classes in natural sequential order
+  const filteredClasses = useMemo(() => {
+    return [...classes]
+      .filter((cls) => cls.name.toLowerCase().includes(search.toLowerCase()))
+      .sort((a, b) => {
+        const weightA = a.numericOrder && a.numericOrder !== 1 ? a.numericOrder : getClassWeight(a.name);
+        const weightB = b.numericOrder && b.numericOrder !== 1 ? b.numericOrder : getClassWeight(b.name);
+        if (weightA !== weightB) return weightA - weightB;
+        return a.name.localeCompare(b.name, undefined, { numeric: true });
+      });
+  }, [classes, search]);
 
   const totalClassesCount = classes.length;
   const totalSectionsCount = classes.reduce((acc, c) => acc + (c.sections?.length || 0), 0);
@@ -297,10 +315,10 @@ export default function ManageClasses({ schoolCode }) {
               ) : (
                 filteredClasses.map((cls, idx) => (
                   <tr key={cls._id} className="hover:bg-slate-50/80 transition">
-                    {/* Order */}
+                    {/* Serial Number */}
                     <td className="py-3 px-4 text-center">
                       <span className="font-bold text-slate-500 text-[11px]">
-                        {cls.numericOrder || idx + 1}
+                        {idx + 1}
                       </span>
                     </td>
 

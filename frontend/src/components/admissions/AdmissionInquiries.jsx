@@ -12,6 +12,7 @@ export default function AdmissionInquiries({ schoolCode }) {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   // Modal State for New Inquiry
@@ -79,12 +80,17 @@ export default function AdmissionInquiries({ schoolCode }) {
   };
 
   useEffect(() => {
-    fetchInquiries();
-  }, [schoolCode, statusFilter]);
+    if (statusFilter !== 'ALL' || search.trim() !== '' || hasSearched) {
+      fetchInquiries();
+    } else {
+      setInquiries([]);
+    }
+  }, [schoolCode, statusFilter, hasSearched]);
 
   // Handle Search Submit
   const handleSearch = (e) => {
     e.preventDefault();
+    setHasSearched(true);
     fetchInquiries();
   };
 
@@ -283,7 +289,26 @@ export default function AdmissionInquiries({ schoolCode }) {
               {inquiries.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    {loading ? 'Loading inquiries...' : 'No inquiries found for this filter.'}
+                    {loading ? (
+                      'Loading inquiries...'
+                    ) : !hasSearched && statusFilter === 'ALL' && !search.trim() ? (
+                      <div className="py-6 flex flex-col items-center justify-center text-slate-500">
+                        <Search className="w-8 h-8 text-slate-400 mb-2" />
+                        <span className="font-bold text-slate-700">Inquiry Directory Ready</span>
+                        <span className="text-xs text-slate-400 mt-1 mb-3">
+                          Enter search term or select status to view inquiries.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setHasSearched(true); fetchInquiries(); }}
+                          className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer shadow-sm"
+                        >
+                          Load All Inquiries
+                        </button>
+                      </div>
+                    ) : (
+                      'No inquiries found for this filter.'
+                    )}
                   </td>
                 </tr>
               ) : (

@@ -1,5 +1,6 @@
 import ExpenseCategory from '../models/ExpenseCategory.js';
 import Expense from '../models/Expense.js';
+import SchoolProfile from '../models/SchoolProfile.js';
 
 // Default Pakistani school expense heads to seed on first launch
 const DEFAULT_EXPENSE_HEADS = [
@@ -23,8 +24,13 @@ export const getCategories = async (req, res) => {
 
     let categories = await ExpenseCategory.find({ schoolCode, isActive: true }).sort({ name: 1 });
 
-    // Seed defaults if brand new school
+    // Seed defaults if brand new school AND school genuinely exists in SchoolProfile
     if (!categories || categories.length === 0) {
+      const schoolExists = await SchoolProfile.exists({ schoolCode });
+      if (!schoolExists) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+
       const seedData = DEFAULT_EXPENSE_HEADS.map((h) => ({
         schoolCode,
         name: h.name,

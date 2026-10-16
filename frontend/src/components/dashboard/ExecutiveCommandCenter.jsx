@@ -27,10 +27,13 @@ import {
   Layers,
   Copy,
   ShieldCheck,
-  School
+  School,
+  Radio,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SchoolLogo from '../common/SchoolLogo';
+import { subscribeToDataChanges } from '../../utils/realtimeEvents';
 
 export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActiveSubModule }) {
   const navigate = useNavigate();
@@ -74,6 +77,9 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
   // 1. ALL HOOKS / STATE DECLARED FIRST (No temporal dead zone)
   const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [loading, setLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
+  const [secondsSinceLastRefresh, setSecondsSinceLastRefresh] = useState(0);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
   // Privacy Mode (Persisted in localStorage)
@@ -158,9 +164,17 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
     setTimeout(() => setCopiedPhone(null), 2200);
   };
 
-  // 3. DATA FETCHING
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
+  const isTodaySelected = selectedDate === getTodayString();
+
+  // 3. REAL-TIME DATA FETCHING (Supports silent background sync)
+  const fetchDashboardData = useCallback(async (options = {}) => {
+    const { silent = false } = options;
+    if (silent) {
+      setIsSyncing(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
       const res = await api.get('/dashboard/daily-summary', {
         params: {
@@ -171,17 +185,69 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
       if (res.data?.success) {
         setDashboardData(res.data);
         setLastRefreshed(new Date());
+        setSecondsSinceLastRefresh(0);
       }
     } catch (err) {
       console.error('Failed to fetch dashboard summary:', err);
     } finally {
-      setLoading(false);
+      if (silent) {
+        setIsSyncing(false);
+      } else {
+        setLoading(false);
+      }
     }
   }, [schoolCode, selectedDate]);
 
+  // Tick seconds since last refresh counter
   useEffect(() => {
-    fetchDashboardData();
+    const timer = setInterval(() => {
+      setSecondsSinceLastRefresh((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 1. Initial Load & on selectedDate / schoolCode change
+  useEffect(() => {
+    fetchDashboardData({ silent: false });
   }, [fetchDashboardData]);
+
+  // 2. Real-Time Cross-Tab & Cross-Component Instant Sync
+  // Fires IMMEDIATELY (0ms delay) when QR scan, attendance, or fee payment occurs
+  useEffect(() => {
+    const unsubscribe = subscribeToDataChanges(() => {
+      fetchDashboardData({ silent: true });
+    });
+    return unsubscribe;
+  }, [fetchDashboardData]);
+
+  // 3. Tab Focus & Visibility Event (Instant refresh when admin returns to tab)
+  useEffect(() => {
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDashboardData({ silent: true });
+      }
+    };
+
+    window.addEventListener('focus', handleVisibilityOrFocus);
+    document.addEventListener('visibilitychange', handleVisibilityOrFocus);
+    return () => {
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+    };
+  }, [fetchDashboardData]);
+
+  // 4. Smart Auto-Polling (Polls every 8 seconds while viewing Today and tab is active)
+  useEffect(() => {
+    if (!autoSyncEnabled || !isTodaySelected) return;
+
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchDashboardData({ silent: true });
+      }
+    }, 8000); // 8-second rapid auto-sync
+
+    return () => clearInterval(interval);
+  }, [autoSyncEnabled, isTodaySelected, fetchDashboardData]);
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -218,7 +284,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
     }
   }, [selectedDate]);
 
-  const isTodaySelected = selectedDate === getTodayString();
   const { summary = {}, breakdowns = {} } = dashboardData || {};
 
   // Filtered lists for active modal
@@ -406,15 +471,52 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
               )}
             </button>
 
-            {/* Refresh Button */}
+            {/* Live Auto-Sync Status & Toggle Badge */}
             <button
               type="button"
-              onClick={fetchDashboardData}
+              onClick={() => setAutoSyncEnabled((prev) => !prev)}
+              title={
+                autoSyncEnabled
+                  ? 'Auto-Sync is ACTIVE (refreshing every 8s). Click to pause.'
+                  : 'Auto-Sync is PAUSED. Click to resume live updates.'
+              }
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer border shadow-sm ${
+                autoSyncEnabled
+                  ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80 ring-1 ring-emerald-500/30'
+                  : 'bg-slate-800/90 text-slate-400 border-slate-700 hover:bg-slate-800'
+              }`}
+            >
+              <span className="relative flex h-2 w-2">
+                {autoSyncEnabled && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                )}
+                <span
+                  className={`relative inline-flex rounded-full h-2 w-2 ${
+                    autoSyncEnabled ? 'bg-emerald-500' : 'bg-slate-500'
+                  }`}
+                ></span>
+              </span>
+              <span>{isSyncing ? 'Syncing...' : autoSyncEnabled ? 'Live Sync' : 'Sync Paused'}</span>
+              {autoSyncEnabled && (
+                <span className="text-[10px] text-emerald-400/80 font-mono">
+                  ({secondsSinceLastRefresh < 5 ? 'Just now' : `${secondsSinceLastRefresh}s`})
+                </span>
+              )}
+            </button>
+
+            {/* Manual Refresh Button */}
+            <button
+              type="button"
+              onClick={() => fetchDashboardData({ silent: false })}
               disabled={loading}
-              title="Refresh Live Data"
+              title="Force Refresh Live Data"
               className="p-2.5 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white rounded-xl transition cursor-pointer shadow-sm disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#ffa000]' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${
+                  loading || isSyncing ? 'animate-spin text-[#ffa000]' : ''
+                }`}
+              />
             </button>
           </div>
         </div>

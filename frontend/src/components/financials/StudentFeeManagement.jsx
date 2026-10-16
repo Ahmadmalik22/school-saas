@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   CreditCard, Search, CheckCircle2, AlertCircle, RefreshCw,
@@ -134,6 +135,7 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
         }
         setSelectedVoucher(null);
         fetchVouchers();
+        broadcastDataChange('fee');
       }
     } catch (err) {
       console.error(err);

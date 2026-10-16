@@ -17,6 +17,7 @@ export default function StudentInformation({ schoolCode }) {
   const [selectedSection, setSelectedSection] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [search, setSearch] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     totalStudents: 0,
@@ -63,11 +64,25 @@ export default function StudentInformation({ schoolCode }) {
   };
 
   useEffect(() => {
-    fetchStudents();
-  }, [schoolCode, selectedClass, selectedSection, statusFilter, page]);
+    // Prevent blind loading of entire school data on mount
+    if (selectedClass !== 'ALL' || search.trim() !== '' || hasSearched) {
+      fetchStudents();
+    } else {
+      setStudents([]);
+      setPagination({
+        totalStudents: 0,
+        totalPages: 1,
+        currentPage: 1,
+        limit: 10,
+        hasNextPage: false,
+        hasPrevPage: false,
+      });
+    }
+  }, [schoolCode, selectedClass, selectedSection, statusFilter, page, hasSearched]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setHasSearched(true);
     setPage(1);
     fetchStudents();
   };
@@ -304,7 +319,26 @@ export default function StudentInformation({ schoolCode }) {
               {students.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="p-8 text-center text-slate-400">
-                    {loading ? 'Loading students...' : 'No student records found matching filters.'}
+                    {loading ? (
+                      'Loading students...'
+                    ) : selectedClass === 'ALL' && !search.trim() && !hasSearched ? (
+                      <div className="py-6 flex flex-col items-center justify-center text-slate-500">
+                        <Search className="w-8 h-8 text-slate-400 mb-2" />
+                        <span className="font-bold text-slate-700">Student Directory Ready</span>
+                        <span className="text-xs text-slate-400 mt-1 mb-3">
+                          Select a Class above or search by Name/Roll No to load records.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setHasSearched(true); fetchStudents(); }}
+                          className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer shadow-sm"
+                        >
+                          Load All Students
+                        </button>
+                      </div>
+                    ) : (
+                      'No student records found matching filters.'
+                    )}
                   </td>
                 </tr>
               ) : (

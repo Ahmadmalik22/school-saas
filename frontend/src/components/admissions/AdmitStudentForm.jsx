@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import {
@@ -139,6 +140,7 @@ export default function AdmitStudentForm({ schoolCode }) {
           admissionNumber: `ADM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
         });
         removePhoto();
+        broadcastDataChange('student');
       }
     } catch (err) {
       console.error(err);

@@ -27,6 +27,7 @@ export default function PrintAdmissionForm({ schoolCode }) {
   const [selectedClass, setSelectedClass] = useState('ALL');
   const [selectedSection, setSelectedSection] = useState('ALL');
   const [search, setSearch] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Selected student for printable preview modal
   const [printStudent, setPrintStudent] = useState(null);
@@ -75,11 +76,16 @@ export default function PrintAdmissionForm({ schoolCode }) {
   };
 
   useEffect(() => {
-    fetchStudents();
-  }, [schoolCode, selectedClass, selectedSection]);
+    if (selectedClass !== 'ALL' || search.trim() !== '' || hasSearched) {
+      fetchStudents();
+    } else {
+      setStudents([]);
+    }
+  }, [schoolCode, selectedClass, selectedSection, hasSearched]);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    setHasSearched(true);
     fetchStudents();
   };
 
@@ -487,7 +493,26 @@ export default function PrintAdmissionForm({ schoolCode }) {
               {students.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    {loading ? 'Searching students...' : 'No admitted students found for this class/section.'}
+                    {loading ? (
+                      'Searching students...'
+                    ) : selectedClass === 'ALL' && !search.trim() && !hasSearched ? (
+                      <div className="py-6 flex flex-col items-center justify-center text-slate-500">
+                        <Search className="w-8 h-8 text-slate-400 mb-2" />
+                        <span className="font-bold text-slate-700">Admission Slips Search Ready</span>
+                        <span className="text-xs text-slate-400 mt-1 mb-3">
+                          Select a Class above or search by Name/Roll to print admission forms.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setHasSearched(true); fetchStudents(); }}
+                          className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer shadow-sm"
+                        >
+                          Load All Students
+                        </button>
+                      </div>
+                    ) : (
+                      'No admitted students found for this class/section.'
+                    )}
                   </td>
                 </tr>
               ) : (

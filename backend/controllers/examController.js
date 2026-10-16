@@ -2,6 +2,7 @@ import ExamTerm from '../models/ExamTerm.js';
 import ClassSubject from '../models/ClassSubject.js';
 import StudentExamMarks from '../models/StudentExamMarks.js';
 import Student from '../models/Student.js';
+import SchoolProfile from '../models/SchoolProfile.js';
 
 // Default 3 standard Exam Terms (1st Term, Mid Term, Final Term)
 const DEFAULT_TERMS = [
@@ -43,6 +44,11 @@ export const getExamTerms = async (req, res) => {
     let terms = await ExamTerm.find({ schoolCode, academicSession }).sort({ order: 1 }).lean();
 
     if (!terms || terms.length === 0) {
+      const schoolExists = await SchoolProfile.exists({ schoolCode });
+      if (!schoolExists) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+
       const seed = DEFAULT_TERMS.map((t) => ({
         schoolCode,
         academicSession,

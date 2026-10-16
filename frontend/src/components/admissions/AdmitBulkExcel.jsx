@@ -250,25 +250,49 @@ export default function AdmitBulkExcel({ schoolCode: propSchoolCode }) {
           {/* Skipped Rows Table (if any) */}
           {result.skippedRows && result.skippedRows.length > 0 && (
             <div className="space-y-2 pt-2">
-              <div className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <span>Skipped Rows Breakdown:</span>
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Skipped / Rejected Rows Breakdown ({result.skippedRows.length}):</span>
+                </div>
+                <span className="text-[11px] text-slate-500 italic">
+                  Tip: Fix these rows in your Excel file and upload again (already admitted students won't duplicate).
+                </span>
               </div>
-              <div className="border border-slate-200 rounded-lg overflow-hidden max-h-60 overflow-y-auto">
+              <div className="border border-amber-200 rounded-lg overflow-hidden max-h-72 overflow-y-auto shadow-sm">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 text-slate-700 font-bold">
+                  <thead className="bg-amber-50/80 text-amber-900 font-bold border-b border-amber-200 uppercase text-[10px] tracking-wider">
                     <tr>
-                      <th className="p-2.5">Row #</th>
+                      <th className="p-2.5 text-center w-16">Row #</th>
                       <th className="p-2.5">Student Name</th>
+                      <th className="p-2.5">Class & Section</th>
+                      <th className="p-2.5 text-center">Roll No</th>
                       <th className="p-2.5">Reason for Skipping</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {result.skippedRows.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50">
-                        <td className="p-2.5 font-mono font-bold text-slate-800">{row.row}</td>
-                        <td className="p-2.5 font-semibold text-slate-800">{row.name}</td>
-                        <td className="p-2.5 text-rose-600 font-medium">{row.reason}</td>
+                      <tr key={idx} className="hover:bg-amber-50/30 transition">
+                        <td className="p-2.5 font-mono font-bold text-center text-slate-800 bg-slate-50/60">
+                          {row.row}
+                        </td>
+                        <td className="p-2.5 font-bold text-slate-900">{row.name}</td>
+                        <td className="p-2.5 text-slate-700">
+                          {row.className !== '—' ? (
+                            <span className="bg-slate-100 px-2 py-0.5 rounded text-[11px] font-semibold text-slate-800 border border-slate-200">
+                              {row.className} ({row.section})
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="p-2.5 font-mono text-center font-bold text-slate-800">
+                          {row.roll || '—'}
+                        </td>
+                        <td className="p-2.5 text-rose-700 font-semibold flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                          <span>{row.reason}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
+import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   Users, Search, DollarSign, Printer, CheckCircle2,
@@ -86,6 +87,7 @@ export default function FamilyFeeVoucher({ schoolCode, setActiveSubModule }) {
         confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
         setCollectingModal(false);
         handleSearchFamily();
+        broadcastDataChange('fee');
       }
     } catch (err) {
       console.error(err);

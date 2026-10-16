@@ -87,6 +87,7 @@ export default function GenerateIdCard({ schoolCode }) {
   // State
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [selectedClass, setSelectedClass] = useState('ALL');
   const [selectedSection, setSelectedSection] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,8 +158,14 @@ export default function GenerateIdCard({ schoolCode }) {
   };
 
   useEffect(() => {
-    if (schoolCode) fetchStudents();
-  }, [schoolCode, selectedClass, selectedSection]);
+    if (selectedClass !== 'ALL' || searchQuery.trim() !== '' || hasSearched) {
+      if (schoolCode) fetchStudents();
+    } else {
+      setStudents([]);
+      setSelectedStudentIds(new Set());
+      setQrCodeUrls({});
+    }
+  }, [schoolCode, selectedClass, selectedSection, hasSearched]);
 
   // 2. High-Speed, Instantly Scannable Attendance QR Code Generator
   const generateQrCodes = async (studentList) => {
@@ -460,7 +467,10 @@ export default function GenerateIdCard({ schoolCode }) {
         {/* Quick Action Buttons */}
         <div className="flex flex-wrap items-center gap-2.5">
           <button
-            onClick={fetchStudents}
+            onClick={() => {
+              setHasSearched(true);
+              fetchStudents();
+            }}
             disabled={loading}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-slate-700"
           >
@@ -552,6 +562,12 @@ export default function GenerateIdCard({ schoolCode }) {
                 placeholder="Roll, Name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setHasSearched(true);
+                    fetchStudents();
+                  }
+                }}
                 className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold text-slate-800 text-xs focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -666,13 +682,35 @@ export default function GenerateIdCard({ schoolCode }) {
           <span className="text-xs text-slate-400">Preparing high-resolution QR codes and layout</span>
         </div>
       ) : students.length === 0 ? (
-        <div className="bg-white rounded-2xl p-16 text-center border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-16 text-center border border-slate-200 shadow-sm flex flex-col items-center justify-center">
           <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-800">No Student Records Found</h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-            No active students found matching the selected class and section filters. Please adjust the
-            filters above or enroll students in the Admission module.
-          </p>
+          {!hasSearched && selectedClass === 'ALL' && !searchQuery.trim() ? (
+            <>
+              <h3 className="text-base font-bold text-slate-800">Student ID Cards Ready</h3>
+              <p className="text-xs text-slate-400 mt-1 mb-4 max-w-md mx-auto">
+                Please select a Class or search by Name/Roll Number above to load student cards, or click below to load all students.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setHasSearched(true);
+                  fetchStudents();
+                }}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-sm flex items-center gap-2"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Load All Students</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <h3 className="text-base font-bold text-slate-800">No Student Records Found</h3>
+              <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+                No active students found matching the selected class and section filters. Please adjust the
+                filters above or enroll students in the Admission module.
+              </p>
+            </>
+          )}
         </div>
       ) : (
         <div

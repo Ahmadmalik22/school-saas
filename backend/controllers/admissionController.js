@@ -239,12 +239,22 @@ export const admitBulkExcel = async (req, res) => {
       const rawDob = row['DOB'] || row['DOB (YYYY-MM-DD)'] || row['Date of Birth'];
       const rawAdmDate = row['Admission Date'] || row['Admission Date (YYYY-MM-DD)'] || row['admissionDate'];
 
-      // Basic field validation (Admission No is OPTIONAL: auto-generated if left blank!)
-      if (!name || !cls || !roll || !fName || !fPhone) {
+      // Specific field validation (Admission No is OPTIONAL: auto-generated if left blank)
+      const missingFields = [];
+      if (!name) missingFields.push('Student Name');
+      if (!cls) missingFields.push('Class');
+      if (!roll) missingFields.push('Roll No');
+      if (!fName) missingFields.push('Father Name');
+      if (!fPhone) missingFields.push('Father Phone');
+
+      if (missingFields.length > 0) {
         skippedRows.push({
           row: rowNumber,
-          name: name || 'Unknown',
-          reason: 'Missing required fields (Student Name, Class, Roll No, Father Name, or Phone).',
+          name: name || 'Empty Name',
+          roll: roll || '—',
+          className: cls || '—',
+          section: sec || '—',
+          reason: `Missing required field(s): ${missingFields.join(', ')}`,
         });
         continue;
       }
@@ -258,7 +268,10 @@ export const admitBulkExcel = async (req, res) => {
         skippedRows.push({
           row: rowNumber,
           name,
-          reason: `Admission No. "${admNo}" pehle se system mein mojood hai (Duplicate).`,
+          roll: roll || '—',
+          className: cls || '—',
+          section: sec || '—',
+          reason: `Admission No. "${admNo}" pehle se mojood hai (Duplicate Admission No).`,
         });
         continue;
       }
@@ -268,7 +281,10 @@ export const admitBulkExcel = async (req, res) => {
         skippedRows.push({
           row: rowNumber,
           name,
-          reason: `Roll No. "${roll}" pehle se ${cls} (${sec}) mein mojood hai (Duplicate).`,
+          roll,
+          className: cls,
+          section: sec,
+          reason: `Roll No. "${roll}" is class (${cls} - Sec ${sec}) mein pehle se mojood hai (Duplicate Roll No).`,
         });
         continue;
       }
@@ -294,6 +310,7 @@ export const admitBulkExcel = async (req, res) => {
       const annualCharges = Number(row['Annual Charges'] || row['annualCharges']) >= 0 ? Number(row['Annual Charges'] || row['annualCharges']) : 0;
 
       validStudents.push({
+        _excelRow: rowNumber,
         schoolCode: cleanSchoolCode,
         admissionNumber: admNo,
         admissionDate: parsedAdmDate,
@@ -328,16 +345,40 @@ export const admitBulkExcel = async (req, res) => {
       existingRollKeySet.add(rollKey);
     }
 
-    // 4. Batch Insert Valid Rows
+    // 4. Batch Insert Valid Rows with resilient error handling
     let insertedCount = 0;
     if (validStudents.length > 0) {
-      const inserted = await Student.insertMany(validStudents, { ordered: false });
-      insertedCount = inserted.length;
+      try {
+        const inserted = await Student.insertMany(validStudents, { ordered: false });
+        insertedCount = inserted.length;
+      } catch (insertError) {
+        // If ordered: false fails on duplicates, MongoDB still inserts non-conflicting docs
+        if (insertError.writeErrors && Array.isArray(insertError.writeErrors)) {
+          insertedCount = insertError.result?.nInserted ?? (validStudents.length - insertError.writeErrors.length);
+          insertError.writeErrors.forEach((we) => {
+            const failedDoc = validStudents[we.index];
+            let reasonMsg = we.errmsg || 'Duplicate key or validation error.';
+            if (we.code === 11000) {
+              reasonMsg = 'Duplicate Roll Number or Admission Number already registered in database.';
+            }
+            skippedRows.push({
+              row: failedDoc ? (failedDoc._excelRow || 'N/A') : 'N/A',
+              name: failedDoc?.fullName || 'Unknown',
+              roll: failedDoc?.rollNumber || '—',
+              className: failedDoc?.className || '—',
+              section: failedDoc?.section || '—',
+              reason: reasonMsg,
+            });
+          });
+        } else {
+          throw insertError;
+        }
+      }
     }
 
     return res.status(200).json({
       success: true,
-      message: `Bulk Import Completed: ${insertedCount} students admitted successfully.`,
+      message: `Bulk Import Completed: ${insertedCount} students admitted successfully.${skippedRows.length > 0 ? ` (${skippedRows.length} rows skipped)` : ''}`,
       stats: {
         totalRows: sheetData.length,
         admittedCount: insertedCount,
