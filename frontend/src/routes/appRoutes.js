@@ -43,6 +43,9 @@ export const ROUTES = {
   REPORTS_STAFF_SALARIES: '/reports/staff-salaries',
   REPORTS_EXAM_PERFORMANCE: '/reports/exam-performance',
   DEVELOPER_SCHOOLS: '/developer/schools',
+  MESSAGING_ABSENT_ALERTS: '/messaging/absent-alerts',
+  MESSAGING_CLASS_DIARY: '/messaging/class-diary',
+  MESSAGING_BROADCAST: '/messaging/broadcast',
 };
 
 // Maps legacy submodule key to Route path
@@ -85,6 +88,9 @@ export const SUBMODULE_TO_PATH = {
   reports_staff_attendance: ROUTES.REPORTS_STAFF_ATTENDANCE,
   reports_staff_salaries: ROUTES.REPORTS_STAFF_SALARIES,
   reports_exam_performance: ROUTES.REPORTS_EXAM_PERFORMANCE,
+  absent_alerts: ROUTES.MESSAGING_ABSENT_ALERTS,
+  class_diary: ROUTES.MESSAGING_CLASS_DIARY,
+  broadcast_announcements: ROUTES.MESSAGING_BROADCAST,
 };
 
 // Maps Route path to legacy submodule key

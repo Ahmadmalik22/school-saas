@@ -5,7 +5,7 @@ import { useAcademicSession } from '../../context/AcademicSessionContext';
 import ExcelJS from 'exceljs';
 import {
   FileText,
-  DollarSign,
+  Receipt,
   TrendingUp,
   Users,
   CalendarCheck,
@@ -296,11 +296,8 @@ export default function ReportingCenter({ schoolCode }) {
           <div>
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
               <FileText className="w-6 h-6 text-[#ffa000]" />
-              School Reporting & Business Intelligence Center
+              <span>School Reporting Center</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Multi-parameter school reporting engine. Analyze fees collection, cash flow, student strength, attendance, and exam merit rosters with 1-click Excel export.
-            </p>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -336,8 +333,8 @@ export default function ReportingCenter({ schoolCode }) {
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            <DollarSign className="w-4 h-4" />
-            <span>1. Fee Collection & Defaulters</span>
+            <Receipt className="w-4 h-4" />
+            <span>Fee Collection & Defaulters</span>
           </button>
 
           <button

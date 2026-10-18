@@ -26,6 +26,7 @@ import schoolProfileRoutes from './routes/schoolProfileRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import messagingRoutes from './routes/messagingRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { ensureDeveloperAndDefaultAccounts } from './controllers/authController.js';
 import { protect, enforceTenantIsolation } from './middlewares/authMiddleware.js';
@@ -101,6 +102,7 @@ app.use('/api/exams', protect, enforceTenantIsolation, examRoutes);
 app.use('/api/sessions', protect, enforceTenantIsolation, sessionRoutes);
 app.use('/api/reports', protect, enforceTenantIsolation, reportRoutes);
 app.use('/api/dashboard', protect, enforceTenantIsolation, dashboardRoutes);
+app.use('/api/messaging', protect, enforceTenantIsolation, messagingRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

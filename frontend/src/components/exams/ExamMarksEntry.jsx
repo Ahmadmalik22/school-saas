@@ -268,11 +268,11 @@ export default function ExamMarksEntry({ schoolCode }) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <FileSpreadsheet className="w-6 h-6 text-amber-500" />
-              Spreadsheet Marks Entry Sheet
+              <FileSpreadsheet className="w-5 h-5 text-amber-500" />
+              Marks Entry Sheet
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Rapid grid-style marks entry with keyboard shortcuts (Arrow / Enter / Tab keys). Instant auto-ranking and grade generation.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Record and calculate terminal examination marks.
             </p>
           </div>
 
@@ -444,19 +444,10 @@ export default function ExamMarksEntry({ schoolCode }) {
         </div>
       </div>
 
-      {/* Keyboard navigation helper pill */}
-      <div className="bg-slate-800 text-slate-200 px-4 py-2 rounded-lg text-xs flex flex-wrap items-center justify-between gap-2">
-        <span className="flex items-center gap-2">
-          <span className="px-1.5 py-0.5 rounded bg-slate-700 font-mono text-[10px] text-amber-400">
-            Navigation Tip
-          </span>
-          Type marks and press <strong className="text-white">Enter</strong> or{' '}
-          <strong className="text-white">Arrow Down</strong> to jump to next student. Type{' '}
-          <strong className="text-amber-300">A</strong> for Absent.
-        </span>
-        <span className="text-[11px] text-slate-400">
-          Showing {filteredStudents.length} students • {subjects.length} subjects
-        </span>
+      {/* Table Status Bar */}
+      <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
+        <span>Showing {filteredStudents.length} students • {subjects.length} subjects</span>
+        <span className="text-[11px] text-slate-400">Use Enter ↵ or ↓ to move between students</span>
       </div>
 
       {/* Spreadsheet Marks Matrix */}

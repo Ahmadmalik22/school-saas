@@ -448,20 +448,10 @@ export default function GenerateIdCard({ schoolCode }) {
       {/* 1. TOP HEADER BANNER */}
       <div className="bg-[#041633] text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-800 no-print">
         <div>
-          <div className="flex items-center gap-2 text-[#ffa000] text-xs font-bold uppercase tracking-wider mb-1">
-            <CreditCard className="w-4 h-4" />
-            <span>Student Management • Digital Smart Pass</span>
-          </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            <span>Student Identity Cards Generator</span>
-            <span className="text-xs bg-amber-500/20 text-[#ffa000] px-2.5 py-0.5 rounded-full border border-amber-500/30 font-bold">
-              PVC CR80 Standard
-            </span>
+            <CreditCard className="w-6 h-6 text-[#ffa000]" />
+            <span>Student Identity Cards</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1 max-w-3xl">
-            Generate authentic school ID cards. Front features school branding, student photo, and
-            aligned particulars with rich design accents. Back includes a <strong>High-Contrast Digital Attendance QR Code</strong> for automated scanning.
-          </p>
         </div>
 
         {/* Quick Action Buttons */}

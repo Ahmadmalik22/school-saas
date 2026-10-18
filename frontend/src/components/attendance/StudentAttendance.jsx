@@ -440,10 +440,7 @@ export default function StudentAttendance({ schoolCode, setActiveSubModule }) {
                 <QrCode className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-black text-white">Smart Card & QR Code Scanner Mode</h3>
-                <p className="text-xs text-slate-300">
-                  Ready for USB Barcode Scanners and Camera Input. Instant audio confirmation enabled.
-                </p>
+                <h3 className="text-base font-black text-white">Smart Card & QR Scanner Mode</h3>
               </div>
             </div>
 

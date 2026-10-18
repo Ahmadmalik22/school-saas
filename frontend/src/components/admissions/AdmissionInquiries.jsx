@@ -183,11 +183,8 @@ export default function AdmissionInquiries({ schoolCode }) {
         <div>
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-amber-500" />
-            <span>Admission Inquiries & 1-Click Conversion</span>
+            <span>Admission Inquiries</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Log visitor & prospective student inquiries for <span className="font-bold text-slate-800">{schoolCode}</span>. Convert into enrolled student with 1-click.
-          </p>
         </div>
 
         {/* New Inquiry Button */}

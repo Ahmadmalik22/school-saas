@@ -5,7 +5,7 @@ import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   CreditCard, Search, CheckCircle2, AlertCircle, RefreshCw,
-  TrendingUp, TrendingDown, DollarSign, Receipt, Clock,
+  TrendingUp, TrendingDown, Receipt, Clock,
   ArrowRight, X, ShieldCheck, Printer, Users, FileSpreadsheet
 } from 'lucide-react';
 import { exportFeeSheetToExcel } from '../../utils/excelExporter';
@@ -273,16 +273,12 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-            <CreditCard className="w-4 h-4" />
-            <span>Financials & Accounts Desk</span>
-          </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            Student Fee Management & Cash Counter
+            <CreditCard className="w-6 h-6 text-[#ffa000]" />
+            <span>Fee Collection & Cash Counter</span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            Accountant physical cash collection desk (Paid, Partially Paid, Unpaid with auto dues tracking)
-            plus bulk fee increment/decrement revisions.
+          <p className="text-xs text-slate-300 mt-1">
+            Student tuition fee collection, payment receipts, and fee revisions.
           </p>
         </div>
 
@@ -532,7 +528,7 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
                             onClick={() => openCollectionModal(v)}
                             className="px-3 py-1.5 bg-[#10b981] hover:bg-emerald-600 text-white font-black rounded-lg shadow-xs flex items-center justify-center gap-1 text-[11px] transition mx-auto cursor-pointer"
                           >
-                            <DollarSign className="w-3.5 h-3.5" />
+                            <Receipt className="w-3.5 h-3.5" />
                             <span>Collect Cash</span>
                           </button>
                         </td>
@@ -552,11 +548,10 @@ export default function StudentFeeManagement({ schoolCode, setActiveSubModule })
           <div className="border-b border-slate-100 pb-4">
             <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-[#ffa000]" />
-              <span>Bulk Student Fee Revision</span>
+              <span>Bulk Fee Revision</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Apply a blanket increase or decrease across an entire class or the whole school.
-              This modifies the students' base monthly tuition fee profile.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Adjust base tuition fees across classes or campus.
             </p>
           </div>
 

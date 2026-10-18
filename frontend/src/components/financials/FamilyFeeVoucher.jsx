@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
-  Users, Search, DollarSign, Printer, CheckCircle2,
+  Users, Search, Printer, CheckCircle2,
   AlertCircle, RefreshCw, X, Receipt, ShieldCheck,
   FileSpreadsheet, ArrowRight, UserCheck
 } from 'lucide-react';
@@ -128,16 +128,12 @@ export default function FamilyFeeVoucher({ schoolCode, setActiveSubModule }) {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-            <Users className="w-4 h-4" />
-            <span>Family Billing & Sibling Management</span>
-          </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            Family Consolidated Fee Voucher
+            <Users className="w-6 h-6 text-[#ffa000]" />
+            <span>Family Sibling Fee Voucher</span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            When multiple siblings (2, 3, or more children) study in the school across different classes,
-            enter the Father's CNIC to generate and print a single consolidated family voucher.
+          <p className="text-xs text-slate-300 mt-1">
+            Consolidated family billing and payments for siblings across classes.
           </p>
         </div>
       </div>
@@ -214,7 +210,7 @@ export default function FamilyFeeVoucher({ schoolCode, setActiveSubModule }) {
                 onClick={() => setCollectingModal(true)}
                 className="px-4 py-2.5 bg-[#10b981] hover:bg-emerald-600 text-white font-black rounded-xl text-xs flex items-center gap-2 shadow-md transition cursor-pointer"
               >
-                <DollarSign className="w-4 h-4" />
+                <Receipt className="w-4 h-4" />
                 <span>Collect Family Cash</span>
               </button>
               <button

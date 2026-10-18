@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import {
   Printer, Search, RefreshCw, AlertCircle, CheckCircle2,
-  GraduationCap, Scissors, ArrowRight, ShieldCheck, DollarSign,
+  GraduationCap, Scissors, ArrowRight, ShieldCheck,
   Filter, CheckSquare, Square, Building2, Landmark
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -226,17 +226,10 @@ export default function PrintFeeVouchers({ schoolCode, setActiveSubModule }) {
       <div className="print:hidden space-y-5">
         <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-              <Printer className="w-4 h-4" />
-              <span>Official Print Engine • Dual Challan Slip System</span>
-            </div>
             <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-              Print Fee Vouchers (Executive 4-in-1 A4 Sheet)
+              <Printer className="w-6 h-6 text-[#ffa000]" />
+              <span>Print Fee Vouchers</span>
             </h1>
-            <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Authentic bank challan typography with crest emblem, barcode, bank deposit info, dual copies
-              (Bank/School Copy & Student/Parent Copy), and perforated cut guides.
-            </p>
           </div>
 
           <div className="flex items-center gap-2.5">

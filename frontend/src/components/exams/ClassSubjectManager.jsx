@@ -178,11 +178,11 @@ export default function ClassSubjectManager({ schoolCode }) {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-amber-500" />
-            Class Subjects & Curriculum Setup
+            <BookOpen className="w-5 h-5 text-amber-500" />
+            Class Subjects Setup
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Define subjects, total marks, and passing criteria per class. Use 1-Click Copy to instantly replicate curriculum across classes without re-typing.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Configure subjects, total marks, and passing criteria per class.
           </p>
         </div>
 

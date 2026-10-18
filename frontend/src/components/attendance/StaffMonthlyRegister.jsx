@@ -6,7 +6,7 @@ import autoTable from 'jspdf-autotable';
 import {
   Calendar, Search, Printer, Download,
   CheckCircle2, AlertCircle, RefreshCw, Users,
-  FileSpreadsheet, Sparkles, DollarSign, Clock,
+  FileSpreadsheet, Sparkles, Clock,
   Briefcase, ShieldAlert, Award, FileDown, FileText
 } from 'lucide-react';
 
@@ -545,19 +545,10 @@ export default function StaffMonthlyRegister({ schoolCode, setActiveSubModule })
       {/* Header Banner */}
       <div className="bg-[#041633] text-white rounded-2xl p-5 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-800 no-print">
         <div>
-          <div className="flex items-center gap-2 text-[#ffa000] text-xs font-bold uppercase tracking-wider mb-1">
-            <Briefcase className="w-4 h-4" />
-            <span>Staff Attendance & Payroll Integration</span>
-          </div>
           <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-[#ffa000]" />
             <span>Staff Monthly Attendance Register</span>
-            <span className="text-xs bg-[#ffa000]/20 text-[#ffa000] border border-[#ffa000]/30 px-2.5 py-0.5 rounded-full font-bold">
-              1 - 31 Days Grid
-            </span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Full Month Visual Roster • Automated Working Days, Unpaid Absents & Salary Deductions
-          </p>
         </div>
 
         {/* Action Buttons */}
@@ -726,7 +717,7 @@ export default function StaffMonthlyRegister({ schoolCode, setActiveSubModule })
 
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <DollarSign className="w-5 h-5" />
+            <Briefcase className="w-5 h-5" />
           </div>
           <div>
             <span className="text-[10px] text-slate-400 uppercase font-bold block">

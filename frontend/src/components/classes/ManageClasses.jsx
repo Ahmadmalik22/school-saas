@@ -203,16 +203,10 @@ export default function ManageClasses({ schoolCode }) {
       {/* Top Header Card */}
       <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-amber-600 text-xs font-bold uppercase tracking-wider mb-0.5">
-            <Layers className="w-4 h-4" />
-            <span>Academic Setup</span>
-          </div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">
-            Manage Classes
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <Layers className="w-5 h-5 text-amber-500" />
+            <span>Manage Classes</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Add and manage classes for your school. Each class automatically gets sections.
-          </p>
         </div>
 
         <button

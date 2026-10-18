@@ -122,11 +122,11 @@ export default function ExamTermsManager({ schoolCode }) {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <CalendarDays className="w-6 h-6 text-amber-500" />
-            Define School Exams
+            <CalendarDays className="w-5 h-5 text-amber-500" />
+            Exam Terms Setup
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Define which exams are conducted in this school year (e.g. 1st Term, Mid Term, Final Term). Marks entry and report cards will automatically follow these exams.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Configure examination terms for the academic session.
           </p>
         </div>
 

@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import {
   Users, Search, Filter, Eye, Edit3, Trash2,
   ChevronLeft, ChevronRight, X, CheckCircle, AlertCircle,
-  Briefcase, Phone, Mail, MapPin, DollarSign, BookOpen
+  Briefcase, Phone, Mail, MapPin, BookOpen
 } from 'lucide-react';
 
 export default function StaffDirectory({ schoolCode }) {

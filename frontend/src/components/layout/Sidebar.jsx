@@ -21,6 +21,7 @@ import {
   User,
   X,
   Calendar,
+  MessageSquare,
 } from 'lucide-react';
 import { ROUTES } from '../../routes/appRoutes';
 import { useAcademicSession } from '../../context/AcademicSessionContext';
@@ -39,6 +40,7 @@ const MODULE_ICONS = {
   financials: CreditCard,
   exams: Award,
   reports: FileText,
+  messaging: MessageSquare,
 };
 
 // Dynamic icon resolver: Supports any Lucide icon name string from moduleCatalog

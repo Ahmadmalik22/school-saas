@@ -103,6 +103,16 @@ export const SYSTEM_MODULES = [
       { id: 'reports_exam_performance', name: 'Exam Merit & Performance', route: '/reports/exam-performance' },
     ],
   },
+  {
+    id: 'messaging',
+    name: 'Message Alerts',
+    icon: 'MessageSquare',
+    submodules: [
+      { id: 'absent_alerts', name: 'Absent Student Alerts', route: '/messaging/absent-alerts' },
+      { id: 'class_diary', name: 'Daily Class Diary', route: '/messaging/class-diary' },
+      { id: 'broadcast_announcements', name: 'Broadcast Announcements', route: '/messaging/broadcast' },
+    ],
+  },
 ];
 
 // Flat array of all granular sub-module keys

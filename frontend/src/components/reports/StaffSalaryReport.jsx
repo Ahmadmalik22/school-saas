@@ -13,7 +13,6 @@ import {
   Calendar,
   CheckCircle,
   Clock,
-  DollarSign,
 } from 'lucide-react';
 
 export default function StaffSalaryReport({ schoolCode }) {
@@ -623,11 +622,8 @@ export default function StaffSalaryReport({ schoolCode }) {
           <div>
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
               <CreditCard className="w-6 h-6 text-[#ffa000]" />
-              Staff Salaries & Payroll Report
+              <span>Staff Salaries & Payroll Report</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Monthly staff salary expenditures, attendance deductions, net payables, and payment disbursement status.
-            </p>
           </div>
 
           <div className="flex items-center gap-2.5">

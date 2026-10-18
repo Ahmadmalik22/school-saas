@@ -4,7 +4,7 @@ import api from '../../api/axios';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import confetti from 'canvas-confetti';
 import {
-  DollarSign, Calendar, Search, Edit3, CheckCircle2,
+  Receipt, Calendar, Search, Edit3, CheckCircle2,
   AlertCircle, RefreshCw, Layers, ShieldCheck, Printer,
   FileSpreadsheet, ArrowRight, X, Clock, HelpCircle
 } from 'lucide-react';
@@ -288,16 +288,12 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-            <DollarSign className="w-4 h-4" />
-            <span>Financials & Student Billing</span>
-          </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            Monthly Fee Generation
+            <Receipt className="w-6 h-6 text-[#ffa000]" />
+            <span>Monthly Fee Generation</span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            Generate monthly fee vouchers for all enrolled students in 1-click. Automatic previous dues
-            rollforward, editable voucher adjustments, and custom remarks.
+          <p className="text-xs text-slate-300 mt-1">
+            Generate and manage monthly student tuition fee vouchers.
           </p>
         </div>
 
@@ -339,9 +335,6 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
             <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Classes Fee Generation Status ({selectedMonth})
             </h2>
-            <span className="text-[11px] text-slate-500">
-              • Click any class below to quickly select and manage
-            </span>
           </div>
 
           <div className="flex items-center gap-2 text-[11px] font-bold">
@@ -492,7 +485,7 @@ export default function StudentFeeGeneration({ schoolCode, setActiveSubModule })
             {generating ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <DollarSign className="w-4 h-4" />
+              <Receipt className="w-4 h-4" />
             )}
             <span>Generate Fee</span>
           </button>

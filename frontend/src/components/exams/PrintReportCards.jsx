@@ -239,11 +239,11 @@ export default function PrintReportCards({ schoolCode }) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <Printer className="w-6 h-6 text-amber-500" />
-              Report Cards & Result Certificates Print Engine
+              <Printer className="w-5 h-5 text-amber-500" />
+              Report Cards & Result Certificates
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Official school report cards automatically branded with <strong className="text-slate-800">{schoolProfile.schoolName}</strong> for Session <strong className="text-amber-600">{academicSession}</strong>.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Generate and print official student term report cards.
             </p>
           </div>
 

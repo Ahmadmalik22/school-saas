@@ -509,7 +509,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                     Today's Fee Collection
                   </span>
-                  <span className="text-[10px] text-slate-400">آج کی فیس وصولی</span>
                 </div>
               </div>
               <button
@@ -565,7 +564,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                     Today's Expenses
                   </span>
-                  <span className="text-[10px] text-slate-400">سکول کے روزانہ اخراجات</span>
                 </div>
               </div>
               <button
@@ -628,7 +626,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                     Cash-In-Hand Today
                   </span>
-                  <span className="text-[10px] text-slate-400">آج کا خالص بیلنس</span>
                 </div>
               </div>
               <button
@@ -690,7 +687,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                     Student Attendance
                   </span>
-                  <span className="text-[10px] text-slate-400">طلباء کی حاضری</span>
                 </div>
               </div>
               <span
@@ -759,7 +755,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                     Staff & Teachers
                   </span>
-                  <span className="text-[10px] text-slate-400">اساتذہ و اسٹاف حاضری</span>
                 </div>
               </div>
               <span
@@ -816,7 +811,6 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                     Admissions & Strength
                   </span>
-                  <span className="text-[10px] text-slate-400">داخلے و کل سٹرینتھ</span>
                 </div>
               </div>
               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">

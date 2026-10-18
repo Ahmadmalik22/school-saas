@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import confetti from 'canvas-confetti';
 import {
   UserPlus, Upload, Image as ImageIcon, CheckCircle,
-  AlertCircle, RefreshCw, X, Briefcase, DollarSign
+  AlertCircle, RefreshCw, X, Briefcase
 } from 'lucide-react';
 
 export default function AddStaffForm({ schoolCode }) {
@@ -107,11 +107,8 @@ export default function AddStaffForm({ schoolCode }) {
         <div>
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-amber-500" />
-            <span>Staff & Teacher Registration Form</span>
+            <span>Staff & Teacher Registration</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Register teachers, administrative staff, accountants, and support team for <span className="font-bold text-slate-800">{schoolCode}</span>.
-          </p>
         </div>
 
         <button

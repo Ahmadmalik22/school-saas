@@ -546,70 +546,56 @@ export default function QrAttendanceScanner({ schoolCode }) {
       {/* 1. TOP HEADER BANNER */}
       <div className="bg-[#041633] text-white rounded-2xl p-5 shadow-lg border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#ffa000] text-xs font-bold uppercase tracking-wider mb-1">
-            <QrCode className="w-4 h-4" />
-            <span>Attendance Center • Automated Digital Gate Pass</span>
-          </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+            <QrCode className="w-6 h-6 text-[#ffa000]" />
             <span>QR Attendance Gate Scanner</span>
             <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30 font-bold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Live Scanner Engine
+              Live
             </span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            Scan student identity cards via mobile camera or laptop webcam for instant gate attendance.
-            Features audio chimes, voice confirmation, and device vibration.
+          <p className="text-xs text-slate-300 mt-1">
+            Real-time digital student gate pass verification.
           </p>
         </div>
 
-        {/* Live Counters Banner */}
+        {/* Live Counters Banner & Upload Image button */}
         <div className="flex items-center gap-3">
-          <div className="bg-slate-800/90 border border-slate-700 px-4 py-2.5 rounded-xl text-center">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 px-3.5 py-2 rounded-xl transition cursor-pointer shadow-sm"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Upload QR Image</span>
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept="image/*"
+            className="hidden"
+          />
+
+          <div className="bg-slate-800/90 border border-slate-700 px-4 py-2 rounded-xl text-center">
             <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">
               Scanned Today
             </span>
-            <span className="text-xl font-black text-amber-400 font-mono">
+            <span className="text-lg font-black text-amber-400 font-mono">
               {todayPresents.length}
             </span>
           </div>
 
-          <div className="bg-slate-800/90 border border-slate-700 px-4 py-2.5 rounded-xl text-center">
+          <div className="bg-slate-800/90 border border-slate-700 px-4 py-2 rounded-xl text-center">
             <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">
               Status
             </span>
-            <span className="text-sm font-bold text-emerald-400 flex items-center gap-1 mt-1 justify-center">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Gate Ready</span>
+            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 mt-0.5 justify-center">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>Ready</span>
             </span>
           </div>
         </div>
-      </div>
-
-      {/* Optical Scanning Tips Alert Banner */}
-      <div className="bg-amber-500/10 border border-amber-500/30 text-slate-800 rounded-xl p-3 flex items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            <strong>Scanning Tip:</strong> Agar mobile screen se scan kar rahay hain to mobile ki screen brightness full karain aur camera se <strong>6-10 inches door</strong> rakhain taa k webcam focus kar sakay.
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-400 hover:bg-amber-500 px-2.5 py-1 rounded-lg transition cursor-pointer shadow-2xs"
-        >
-          <Upload className="w-3.5 h-3.5" />
-          <span>Upload QR Image</span>
-        </button>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept="image/*"
-          className="hidden"
-        />
       </div>
 
       {/* 2. SCANNER CONTROLS & CAMERA INTERACTION PANEL */}
@@ -725,9 +711,6 @@ export default function QrAttendanceScanner({ schoolCode }) {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">Camera Scanner Ready</h3>
-                  <p className="text-xs text-slate-400 max-w-sm mt-1">
-                    Click "Launch Camera Scanner" below to activate mobile camera or laptop webcam for QR scanning.
-                  </p>
                 </div>
                 <button
                   type="button"
@@ -774,14 +757,12 @@ export default function QrAttendanceScanner({ schoolCode }) {
                 </div>
 
                 {/* Subtitle helper badge with pulsing green radar beacon */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-emerald-500/50 text-white text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 whitespace-nowrap">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-emerald-500/50 text-white text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-2 whitespace-nowrap">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                   </span>
                   <span className="text-emerald-300">Scanner Active</span>
-                  <span className="text-slate-400">•</span>
-                  <span>Align Student Card Inside Frame</span>
                 </div>
               </div>
             )}
@@ -940,10 +921,7 @@ export default function QrAttendanceScanner({ schoolCode }) {
             ) : (
               <div className="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                 <QrCode className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold">No student scanned yet.</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">
-                  Point the camera at an ID Card QR Code to mark attendance.
-                </p>
+                <p className="text-xs font-semibold">No student scanned yet</p>
               </div>
             )}
           </div>

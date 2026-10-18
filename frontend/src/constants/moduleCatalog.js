@@ -27,11 +27,11 @@ export const SYSTEM_MODULES = [
     name: 'Admissions & Inquiries',
     icon: 'UserPlus',
     submodules: [
-      { id: 'admit_student', name: 'Admit New Student Form', route: '/admissions/admit' },
-      { id: 'manage_admissions', name: 'Manage Admissions List & Edit', route: '/admissions/manage' },
-      { id: 'admit_bulk', name: 'Bulk Student Excel Import', route: '/admissions/bulk' },
-      { id: 'inquiries', name: 'Admission Inquiries & Leads', route: '/admissions/inquiries' },
-      { id: 'print_form', name: 'Print Admission Slip / Form', route: '/admissions/print-slip' },
+      { id: 'admit_student', name: 'Admit Student', route: '/admissions/admit' },
+      { id: 'manage_admissions', name: 'Manage Admissions', route: '/admissions/manage' },
+      { id: 'admit_bulk', name: 'Bulk Student Import', route: '/admissions/bulk' },
+      { id: 'inquiries', name: 'Admission Inquiries', route: '/admissions/inquiries' },
+      { id: 'print_form', name: 'Print Admission Forms', route: '/admissions/print-slip' },
     ],
   },
   {
@@ -39,9 +39,9 @@ export const SYSTEM_MODULES = [
     name: 'Student Management',
     icon: 'Users',
     submodules: [
-      { id: 'student_info', name: 'Student Information Directory', route: '/students/directory' },
+      { id: 'student_info', name: 'Student Directory', route: '/students/directory' },
       { id: 'student_promotion', name: 'Student Class Promotion', route: '/students/promotion' },
-      { id: 'generate_id_card', name: 'Generate Student ID Cards', route: '/students/id-cards' },
+      { id: 'generate_id_card', name: 'Student ID Cards', route: '/students/id-cards' },
     ],
   },
   {
@@ -49,8 +49,8 @@ export const SYSTEM_MODULES = [
     name: 'Staff & Faculty',
     icon: 'Briefcase',
     submodules: [
-      { id: 'add_staff', name: 'Add New Staff Member', route: '/staff/add' },
-      { id: 'staff_directory', name: 'Staff & Faculty Directory', route: '/staff/directory' },
+      { id: 'add_staff', name: 'Add Staff Member', route: '/staff/add' },
+      { id: 'staff_directory', name: 'Staff Directory', route: '/staff/directory' },
     ],
   },
   {
@@ -71,10 +71,10 @@ export const SYSTEM_MODULES = [
     icon: 'CreditCard',
     submodules: [
       { id: 'student_fee_generation', name: 'Monthly Fee Generation', route: '/financials/fee-generation' },
-      { id: 'student_fee_management', name: 'Fee Collection & Cash Counter', route: '/financials/fee-management' },
+      { id: 'student_fee_management', name: 'Fee Collection & Counter', route: '/financials/fee-management' },
       { id: 'family_fee_voucher', name: 'Family Sibling Voucher', route: '/financials/family-voucher' },
-      { id: 'fee_vouchers_print', name: 'Print 3-Copy Bank Vouchers', route: '/financials/print-vouchers' },
-      { id: 'school_expenses', name: 'School Expense Management', route: '/financials/expenses' },
+      { id: 'fee_vouchers_print', name: 'Print Fee Vouchers', route: '/financials/print-vouchers' },
+      { id: 'school_expenses', name: 'Expense Management', route: '/financials/expenses' },
       { id: 'staff_salary_generation', name: 'Staff Salary & Payroll', route: '/financials/staff-salary' },
     ],
   },
@@ -83,7 +83,7 @@ export const SYSTEM_MODULES = [
     name: 'Examinations',
     icon: 'Award',
     submodules: [
-      { id: 'exam_terms', name: 'Define Exam Terms', route: '/exams/terms' },
+      { id: 'exam_terms', name: 'Exam Terms Setup', route: '/exams/terms' },
       { id: 'exam_subjects', name: 'Class Subjects Setup', route: '/exams/subjects' },
       { id: 'exam_marks_entry', name: 'Marks Entry Sheet', route: '/exams/marks-entry' },
       { id: 'exam_report_cards', name: 'Print Report Cards', route: '/exams/report-cards' },
@@ -103,6 +103,16 @@ export const SYSTEM_MODULES = [
       { id: 'reports_staff_attendance', name: 'Staff Attendance Report', route: '/reports/staff-attendance' },
       { id: 'reports_staff_salaries', name: 'Staff Salaries Report', route: '/reports/staff-salaries' },
       { id: 'reports_exam_performance', name: 'Exam Merit & Performance', route: '/reports/exam-performance' },
+    ],
+  },
+  {
+    id: 'messaging',
+    name: 'Message Alerts',
+    icon: 'MessageSquare',
+    submodules: [
+      { id: 'absent_alerts', name: 'Absent Student Alerts', route: '/messaging/absent-alerts' },
+      { id: 'class_diary', name: 'Daily Class Diary', route: '/messaging/class-diary' },
+      { id: 'broadcast_announcements', name: 'Broadcast Announcements', route: '/messaging/broadcast' },
     ],
   },
 ];

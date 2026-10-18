@@ -17,7 +17,7 @@ import {
   School,
   Save,
   User,
-  DollarSign,
+  Receipt,
   Filter,
   Camera,
   Upload,
@@ -264,11 +264,8 @@ export default function ManageAdmissions({ schoolCode }) {
         <div>
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <Users className="w-5 h-5 text-[#ffa000]" />
-            <span>Manage Admissions & Student Directory</span>
+            <span>Admissions Directory</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            View all admitted students, edit comprehensive admission details, and manage student enrollments for school <span className="font-bold text-slate-800">{schoolCode}</span>.
-          </p>
         </div>
 
         <div className="flex items-center gap-2 bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-200">
@@ -822,7 +819,7 @@ export default function ManageAdmissions({ schoolCode }) {
               {/* Section 4: Fee Structure & Concessions */}
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                 <h3 className="font-bold text-slate-900 uppercase text-[11px] tracking-wide flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
+                  <Receipt className="w-4 h-4 text-emerald-600" />
                   <span>4. Fee Structure & Concession</span>
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">

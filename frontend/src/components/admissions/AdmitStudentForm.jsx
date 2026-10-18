@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 import { useAcademicClasses } from '../../hooks/useAcademicClasses';
 import {
   UserPlus, Upload, Image as ImageIcon, CheckCircle,
-  AlertCircle, RefreshCw, X, Calendar, DollarSign
+  AlertCircle, RefreshCw, X, Calendar, Receipt
 } from 'lucide-react';
 
 export default function AdmitStudentForm({ schoolCode }) {
@@ -157,11 +157,8 @@ export default function AdmitStudentForm({ schoolCode }) {
         <div>
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-amber-500" />
-            <span>Official Student Admission Form</span>
+            <span>Student Admission Registration</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Register new student profile with photo, guardian details, and academic placement for <span className="font-bold text-slate-800">School: {schoolCode}</span>.
-          </p>
         </div>
         <button
           type="button"
@@ -564,12 +561,9 @@ export default function AdmitStudentForm({ schoolCode }) {
           <div className="border-b border-slate-100 pb-2 flex items-center justify-between">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
-                <DollarSign className="w-4 h-4" />
+                <Receipt className="w-4 h-4" />
                 <span>4. Fee Structure & Admission Agreement</span>
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Define agreed tuition and admission fee structure. (Kept private for Accounts & Fee Challans — will NOT show on printed Admission Slip).
-              </p>
             </div>
             <span className="text-[11px] text-slate-400 font-medium">Step 4 of 5</span>
           </div>

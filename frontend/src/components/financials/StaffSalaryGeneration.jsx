@@ -4,7 +4,7 @@ import api from '../../api/axios';
 import confetti from 'canvas-confetti';
 import {
   Briefcase, Calendar, Search, RefreshCw, CheckCircle2,
-  AlertCircle, DollarSign, Edit3, X, Printer, ShieldCheck,
+  AlertCircle, Edit3, X, Printer, ShieldCheck,
   FileSpreadsheet, ArrowRight, Clock, Award
 } from 'lucide-react';
 import { exportStaffPayrollToExcel } from '../../utils/excelExporter';
@@ -208,17 +208,10 @@ export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-            <Briefcase className="w-4 h-4" />
-            <span>Staff Payroll & Compensation</span>
-          </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            Staff Monthly Salary Generation
+            <Briefcase className="w-6 h-6 text-[#ffa000]" />
+            <span>Staff Monthly Salary Generation</span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            Automatically computes monthly salaries synced with Staff Attendance: Absent deduction,
-            Half-day deduction, Late penalty policy (3 lates = 1 absent), allowances, and custom remarks.
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -290,7 +283,7 @@ export default function StaffSalaryGeneration({ schoolCode, setActiveSubModule }
             {generating ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <DollarSign className="w-4 h-4" />
+              <Briefcase className="w-4 h-4" />
             )}
             <span>Generate / Recalculate Payroll</span>
           </button>

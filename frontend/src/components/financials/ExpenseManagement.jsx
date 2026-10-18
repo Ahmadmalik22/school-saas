@@ -4,7 +4,7 @@ import { broadcastDataChange } from '../../utils/realtimeEvents';
 import confetti from 'canvas-confetti';
 import {
   Wallet, Plus, Search, Calendar, RefreshCw, CheckCircle2,
-  AlertCircle, DollarSign, Edit3, Trash2, X, FileSpreadsheet,
+  AlertCircle, Edit3, Trash2, X, FileSpreadsheet,
   Tag, Clock, ArrowRight, ShieldCheck, Layers, HelpCircle
 } from 'lucide-react';
 import { exportExpenseLedgerToExcel } from '../../utils/excelExporter';
@@ -270,17 +270,10 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-r from-[#041633] via-[#09234e] to-[#041633] rounded-2xl p-6 border border-slate-700 shadow-xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#ffa000] uppercase tracking-wider mb-1">
-            <Wallet className="w-4 h-4" />
-            <span>School Accounts & Roznamcha • Campus Expenses</span>
-          </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            School Expense Management & Ledger
+            <Wallet className="w-6 h-6 text-[#ffa000]" />
+            <span>Expense Management & Ledger</span>
           </h1>
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-            Quick daily expense entry with category management. Select category, enter amount and remarks.
-            Categories remain permanently saved once opened.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -372,7 +365,6 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
               Quick Expense Entry
             </h2>
           </div>
-          <span className="text-[11px] text-slate-400 font-medium">Takes only 5 seconds</span>
         </div>
 
         <form onSubmit={handleRecordExpense} className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-end text-xs">
@@ -641,9 +633,6 @@ export default function ExpenseManagement({ schoolCode, setActiveSubModule }) {
                   required
                   autoFocus
                 />
-                <span className="text-[10px] text-slate-400 mt-1 block">
-                  This category will remain permanently saved and available in the dropdown.
-                </span>
               </div>
 
               <div>

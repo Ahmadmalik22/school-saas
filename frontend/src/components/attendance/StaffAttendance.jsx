@@ -197,24 +197,21 @@ export default function StaffAttendance({ schoolCode, setActiveSubModule }) {
       {/* Header Banner */}
       <div className="bg-[#041633] text-white rounded-2xl p-5 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-800">
         <div>
-          <div className="flex items-center gap-2 text-[#ffa000] text-xs font-bold uppercase tracking-wider mb-1">
-            <Briefcase className="w-4 h-4" />
-            <span>Staff Punctuality & Daily Roster</span>
-          </div>
           <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-            <span>Teachers & Staff Daily Attendance</span>
+            <Briefcase className="w-5 h-5 text-[#ffa000]" />
+            <span>Staff Daily Attendance</span>
             {sheetData?.isExisting ? (
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
-                ✓ Saved in Database
+              <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                ✓ Saved
               </span>
             ) : (
-              <span className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold">
-                Draft (Unsaved)
+              <span className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                Draft
               </span>
             )}
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Daily Attendance • Time-In Punctuality • Automated Unpaid Absent Flow into Monthly Payroll
+            Record and manage daily faculty and staff attendance.
           </p>
         </div>
 

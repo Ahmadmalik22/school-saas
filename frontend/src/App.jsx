@@ -51,6 +51,9 @@ import StaffAttendanceReport from './components/reports/StaffAttendanceReport';
 import StaffSalaryReport from './components/reports/StaffSalaryReport';
 import ExamPerformanceReport from './components/reports/ExamPerformanceReport';
 import ReportingCenter from './components/reports/ReportingCenter';
+import AbsentStudentAlerts from './components/messaging/AbsentStudentAlerts';
+import ClassDiaryManager from './components/messaging/ClassDiaryManager';
+import BroadcastAnnouncements from './components/messaging/BroadcastAnnouncements';
 
 import { ShieldAlert } from 'lucide-react';
 
@@ -604,6 +607,35 @@ function AppContent() {
                   }
                 />
 
+                {/* Message Alert Center */}
+                <Route
+                  path={ROUTES.MESSAGING_ABSENT_ALERTS}
+                  element={
+                    <ProtectedSubmodule
+                      submoduleKey="absent_alerts"
+                      element={<AbsentStudentAlerts schoolCode={schoolCode} />}
+                    />
+                  }
+                />
+                <Route
+                  path={ROUTES.MESSAGING_CLASS_DIARY}
+                  element={
+                    <ProtectedSubmodule
+                      submoduleKey="class_diary"
+                      element={<ClassDiaryManager schoolCode={schoolCode} />}
+                    />
+                  }
+                />
+                <Route
+                  path={ROUTES.MESSAGING_BROADCAST}
+                  element={
+                    <ProtectedSubmodule
+                      submoduleKey="broadcast_announcements"
+                      element={<BroadcastAnnouncements schoolCode={schoolCode} />}
+                    />
+                  }
+                />
+
                 {/* Category-Level Redirects */}
                 <Route path="/classes" element={<Navigate to={ROUTES.CLASSES_MANAGE} replace />} />
                 <Route path="/admissions" element={<Navigate to={ROUTES.ADMISSIONS_ADMIT} replace />} />
@@ -612,6 +644,7 @@ function AppContent() {
                 <Route path="/attendance" element={<Navigate to={ROUTES.ATTENDANCE_STUDENT} replace />} />
                 <Route path="/financials" element={<Navigate to={ROUTES.FINANCIALS_FEE_GEN} replace />} />
                 <Route path="/exams" element={<Navigate to={ROUTES.EXAMS_SUBJECTS} replace />} />
+                <Route path="/messaging" element={<Navigate to={ROUTES.MESSAGING_ABSENT_ALERTS} replace />} />
 
                 {/* Fallback to Default Home Route */}
                 <Route path="*" element={<Navigate to={defaultHomeRoute} replace />} />

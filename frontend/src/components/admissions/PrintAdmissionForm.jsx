@@ -411,11 +411,8 @@ export default function PrintAdmissionForm({ schoolCode }) {
         <div>
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <Printer className="w-5 h-5 text-amber-500" />
-            <span>Print Student Admission Slips & Official Forms</span>
+            <span>Print Admission Forms</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Preview, print, and download official vector A4 admission forms for <span className="font-bold text-slate-800">{schoolProfile.schoolName || schoolCode}</span>.
-          </p>
         </div>
       </div>
 
