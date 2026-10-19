@@ -470,7 +470,7 @@ export default function StaffMonthlyRegister({ schoolCode, setActiveSubModule })
           pageHeight - 5
         );
         doc.text(
-          `Generated automatically by Akkhor™ School ERP`,
+          `Generated automatically by EduNexus™ School ERP`,
           pageWidth - margin,
           pageHeight - 5,
           { align: 'right' }

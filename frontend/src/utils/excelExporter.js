@@ -41,8 +41,8 @@ const headerBorder = {
  * 1. Export Student Fee Sheet / Recovery Ledger
  */
 export async function exportFeeSheetToExcel({
-  schoolCode = 'SCH-101',
-  schoolName = 'ISLAMABAD MODEL COLLEGE FOR BOYS',
+  schoolCode = '',
+  schoolName = 'EduNexus Academic Portal',
   className = '',
   section = '',
   monthYear = '',
@@ -235,8 +235,8 @@ export async function exportFeeSheetToExcel({
  * 2. Export Staff Monthly Payroll / Salary Sheet
  */
 export async function exportStaffPayrollToExcel({
-  schoolCode = 'SCH-101',
-  schoolName = 'ISLAMABAD MODEL COLLEGE FOR BOYS',
+  schoolCode = '',
+  schoolName = 'EduNexus Academic Portal',
   monthYear = '',
   records = [],
   stats = null,
@@ -410,8 +410,8 @@ export async function exportStaffPayrollToExcel({
  * 3. Export Student Master Directory / Enrollment Roster
  */
 export async function exportStudentDirectoryToExcel({
-  schoolCode = 'SCH-101',
-  schoolName = 'ISLAMABAD MODEL COLLEGE FOR BOYS',
+  schoolCode = '',
+  schoolName = 'EduNexus Academic Portal',
   students = [],
   filterClass = 'ALL',
 }) {
@@ -519,8 +519,8 @@ export async function exportStudentDirectoryToExcel({
  * 4. Export Roznamcha / Daily Expense Ledger
  */
 export async function exportExpenseLedgerToExcel({
-  schoolCode = 'SCH-101',
-  schoolName = 'ISLAMABAD MODEL COLLEGE FOR BOYS',
+  schoolCode = '',
+  schoolName = 'EduNexus Academic Portal',
   monthYear = '',
   expenses = [],
   stats = null,

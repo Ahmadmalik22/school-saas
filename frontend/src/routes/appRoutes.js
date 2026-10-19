@@ -46,6 +46,12 @@ export const ROUTES = {
   MESSAGING_ABSENT_ALERTS: '/messaging/absent-alerts',
   MESSAGING_CLASS_DIARY: '/messaging/class-diary',
   MESSAGING_BROADCAST: '/messaging/broadcast',
+  // Backward compatibility / Quick action aliases
+  STUDENTS_ATTENDANCE: '/attendance/student',
+  STAFF_ATTENDANCE: '/attendance/staff',
+  FEE_COLLECTION: '/financials/fee-management',
+  ADMISSION_APPLY: '/admissions/admit',
+  EXPENSES_RECORD: '/financials/expenses',
 };
 
 // Maps legacy submodule key to Route path
@@ -91,6 +97,12 @@ export const SUBMODULE_TO_PATH = {
   absent_alerts: ROUTES.MESSAGING_ABSENT_ALERTS,
   class_diary: ROUTES.MESSAGING_CLASS_DIARY,
   broadcast_announcements: ROUTES.MESSAGING_BROADCAST,
+  // Quick Action submodule aliases
+  mark_student_attendance: ROUTES.ATTENDANCE_STUDENT,
+  mark_staff_attendance: ROUTES.ATTENDANCE_STAFF,
+  fee_collection: ROUTES.FINANCIALS_FEE_MGMT,
+  record_expense: ROUTES.FINANCIALS_EXPENSES,
+  reports_center: ROUTES.REPORTS_CENTER,
 };
 
 // Maps Route path to legacy submodule key

@@ -41,9 +41,9 @@ export const AuthProvider = ({ children }) => {
         if (p.schoolName) return p.schoolName;
       }
       const saved = localStorage.getItem('school_saas_user');
-      return saved ? JSON.parse(saved).schoolName : 'ISLAMABAD MODEL COLLEGE FOR BOYS';
+      return saved ? JSON.parse(saved).schoolName : 'EduNexus';
     } catch {
-      return 'ISLAMABAD MODEL COLLEGE FOR BOYS';
+      return 'EduNexus';
     }
   });
 
@@ -80,11 +80,23 @@ export const AuthProvider = ({ children }) => {
     return null;
   }, []);
 
-  // Sync document title with current school branding
+  // Sync document title with EduNexus and current school branding
   useEffect(() => {
-    const brandName = schoolProfile?.schoolName || activeSchoolName || 'School Portal';
-    document.title = `${brandName} | Management Portal`;
-  }, [schoolProfile?.schoolName, activeSchoolName]);
+    if (!user) {
+      document.title = 'EduNexus | Smart School Management System';
+      return;
+    }
+    if (user.role === 'SUPER_ADMIN' || activeSchoolCode === 'SYSTEM') {
+      document.title = 'EduNexus | Developer SaaS Command Center';
+      return;
+    }
+    const currentName = schoolProfile?.schoolName || activeSchoolName;
+    if (currentName && currentName !== 'EduNexus') {
+      document.title = `${currentName} | EduNexus Portal`;
+    } else {
+      document.title = 'EduNexus | Smart School Management System';
+    }
+  }, [user, activeSchoolCode, schoolProfile?.schoolName, activeSchoolName]);
 
   // 1. Verify and refresh session on initial load
   useEffect(() => {

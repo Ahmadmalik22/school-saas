@@ -575,11 +575,23 @@ export async function createWhatsAppClassGroup(schoolCode, groupTitle, participa
     console.warn(`Could not get invite code for group ${group.id}:`, err.message);
   }
 
+  // Fetch actual metadata from WhatsApp to get true participant count
+  let actualParticipants = 1;
+  try {
+    const meta = await sock.groupMetadata(group.id);
+    actualParticipants = meta?.participants?.length || 1;
+  } catch {
+    actualParticipants = group?.participants ? Object.keys(group.participants).length : (uniqueJids.length + 1);
+  }
+
+  const failedCount = Math.max(0, (uniqueJids.length + 1) - actualParticipants);
+
   return {
     groupJid: group.id,
     groupName: groupTitle,
     inviteLink,
-    totalParticipants: uniqueJids.length + 1, // includes school admin
+    totalParticipants: actualParticipants,
+    failedCount,
   };
 }
 

@@ -524,9 +524,14 @@ export async function createClassGroup(req, res) {
       { upsert: true, new: true }
     );
 
+    let successMessage = `WhatsApp Group "${finalTitle}" created successfully with ${groupResult.totalParticipants} participants!`;
+    if (groupResult.failedCount > 0) {
+      successMessage = `WhatsApp Group "${finalTitle}" created with ${groupResult.totalParticipants} participant(s). Note: ${groupResult.failedCount} student(s) could not be added directly due to WhatsApp privacy settings ("My Contacts Only"). You can share the group invite link with them!`;
+    }
+
     return res.status(200).json({
       success: true,
-      message: `WhatsApp Group "${finalTitle}" created successfully with ${groupResult.totalParticipants} participants!`,
+      message: successMessage,
       data: savedMapping,
     });
   } catch (err) {

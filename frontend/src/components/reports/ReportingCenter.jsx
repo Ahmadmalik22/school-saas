@@ -59,9 +59,9 @@ export default function ReportingCenter({ schoolCode }) {
   const [termsList, setTermsList] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [schoolProfile, setSchoolProfile] = useState({
-    schoolName: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
-    address: 'PAKISTAN TOWN, ISLAMABAD',
-    affiliation: 'Federal Board (FBISE)',
+    schoolName: '',
+    address: '',
+    affiliation: '',
   });
 
   // Keep session in sync with global context default
@@ -183,7 +183,7 @@ export default function ReportingCenter({ schoolCode }) {
 
     // School Header Row
     worksheet.mergeCells('A1:G1');
-    worksheet.getCell('A1').value = `${schoolProfile.schoolName || 'Akkhor Model School'} - Official Report`;
+    worksheet.getCell('A1').value = `${schoolProfile.schoolName || 'EduNexus Model School'} - Official Report`;
     worksheet.getCell('A1').font = { size: 14, bold: true };
     worksheet.getCell('A1').alignment = { horizontal: 'center' };
 

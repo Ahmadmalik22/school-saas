@@ -40,11 +40,11 @@ export default function PrintReportCards({ schoolCode }) {
 
   // School Profile & Branding State (Automatically populated from database)
   const [schoolProfile, setSchoolProfile] = useState({
-    schoolName: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
-    tagline: 'Excellence in Education & Character Building',
-    address: 'PAKISTAN TOWN, ISLAMABAD',
-    phone: '+92 51 9283741',
-    affiliation: 'Affiliated with Federal Board of Intermediate and Secondary Education (FBISE)',
+    schoolName: '',
+    tagline: '',
+    address: '',
+    phone: '',
+    affiliation: '',
     principalTitle: 'Principal',
     vicePrincipalTitle: 'Vice Principal',
     logoUrl: null,
@@ -492,10 +492,10 @@ export default function PrintReportCards({ schoolCode }) {
                     {/* School Title & Address (Auto-loaded from logged-in School Profile) */}
                     <div className="text-center flex-1 px-4">
                       <h1 className="text-xl md:text-2xl font-black uppercase tracking-wider text-slate-900 leading-tight">
-                        {schoolProfile.schoolName || 'ISLAMABAD MODEL COLLEGE FOR BOYS'}
+                        {schoolProfile.schoolName || 'Official School Report'}
                       </h1>
                       <p className="text-xs md:text-sm font-bold uppercase tracking-wide text-slate-700 mt-0.5">
-                        {schoolProfile.address || 'PAKISTAN TOWN, ISLAMABAD'}
+                        {schoolProfile.address || ''}
                       </p>
                       {schoolProfile.affiliation && (
                         <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">

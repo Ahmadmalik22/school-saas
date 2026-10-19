@@ -49,10 +49,11 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
   // Helper for navigating to routes or submodules
   const handleNavigate = (route, submoduleKey) => {
+    if (route) {
+      navigate(route);
+    }
     if (setActiveSubModule && submoduleKey) {
       setActiveSubModule(submoduleKey);
-    } else if (route) {
-      navigate(route);
     }
   };
 
@@ -971,7 +972,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
             </p>
             <button
               type="button"
-              onClick={() => handleNavigate(ROUTES.STUDENTS_ATTENDANCE, 'mark_student_attendance')}
+              onClick={() => handleNavigate(ROUTES.ATTENDANCE_STUDENT, 'student_attendance')}
               className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 bg-[#041633] hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition cursor-pointer"
             >
               <span>+ Mark Student Attendance Now</span>
@@ -995,7 +996,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.FEE_COLLECTION, 'fee_collection')}
+            onClick={() => handleNavigate(ROUTES.FINANCIALS_FEE_MGMT, 'student_fee_management')}
             className="p-3.5 bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition">
@@ -1006,7 +1007,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.ADMISSION_APPLY, 'admit_student')}
+            onClick={() => handleNavigate(ROUTES.ADMISSIONS_ADMIT, 'admit_student')}
             className="p-3.5 bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-800 rounded-xl border border-slate-200 hover:border-amber-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-105 transition">
@@ -1017,7 +1018,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.STUDENTS_ATTENDANCE, 'mark_student_attendance')}
+            onClick={() => handleNavigate(ROUTES.ATTENDANCE_STUDENT, 'student_attendance')}
             className="p-3.5 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-800 rounded-xl border border-slate-200 hover:border-blue-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center group-hover:scale-105 transition">
@@ -1028,7 +1029,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.STAFF_ATTENDANCE, 'mark_staff_attendance')}
+            onClick={() => handleNavigate(ROUTES.ATTENDANCE_STAFF, 'staff_attendance')}
             className="p-3.5 bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-800 rounded-xl border border-slate-200 hover:border-purple-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center group-hover:scale-105 transition">
@@ -1039,7 +1040,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.EXPENSES_RECORD, 'record_expense')}
+            onClick={() => handleNavigate(ROUTES.FINANCIALS_EXPENSES, 'school_expenses')}
             className="p-3.5 bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-800 rounded-xl border border-slate-200 hover:border-rose-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-105 transition">
@@ -1050,7 +1051,7 @@ export default function ExecutiveCommandCenter({ schoolCode = 'SCH-101', setActi
 
           <button
             type="button"
-            onClick={() => handleNavigate(ROUTES.REPORTS_CENTER, 'reports_center')}
+            onClick={() => handleNavigate(ROUTES.REPORTS_CENTER, 'reports')}
             className="p-3.5 bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 rounded-xl border border-slate-200 hover:border-indigo-300 transition flex flex-col items-center text-center gap-2 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-105 transition">

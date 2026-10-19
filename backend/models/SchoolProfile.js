@@ -14,7 +14,7 @@ const SchoolProfileSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      default: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
+      default: 'School Campus Portal',
     },
     tagline: {
       type: String,

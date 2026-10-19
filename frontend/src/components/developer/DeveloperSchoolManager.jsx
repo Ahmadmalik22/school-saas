@@ -59,6 +59,11 @@ export default function DeveloperSchoolManager() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  // Delete School state
+  const [schoolToDelete, setSchoolToDelete] = useState(null);
+  const [deletingSchool, setDeletingSchool] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+
   // Modals state
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState(null); // When managing users of a school
@@ -171,6 +176,31 @@ export default function DeveloperSchoolManager() {
   const handleEnterSchool = (school) => {
     switchSchoolContext(school.schoolCode, school.schoolName);
     navigate('/dashboard');
+  };
+
+  // Open Delete School Modal
+  const handleOpenDeleteModal = (school) => {
+    setSchoolToDelete(school);
+    setDeleteConfirmText('');
+  };
+
+  // Confirm Permanent Cascading School Deletion
+  const handleConfirmDeleteSchool = async () => {
+    if (!schoolToDelete) return;
+    try {
+      setDeletingSchool(true);
+      const res = await api.delete(`/auth/developer/schools/${schoolToDelete.schoolCode}`);
+      if (res.data?.success) {
+        setSchools((prev) => prev.filter((s) => s.schoolCode !== schoolToDelete.schoolCode));
+        setSuccessMsg(res.data.message || `School [${schoolToDelete.schoolCode}] and all its data have been deleted.`);
+        setTimeout(() => setSuccessMsg(''), 4500);
+        setSchoolToDelete(null);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete school.');
+    } finally {
+      setDeletingSchool(false);
+    }
   };
 
   // Open Manage Users Modal for a school
@@ -655,22 +685,30 @@ export default function DeveloperSchoolManager() {
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="p-4 bg-white flex items-center justify-between gap-3">
+                <div className="p-4 bg-white flex items-center justify-between gap-2.5">
                   <button
                     onClick={() => handleOpenUsersModal(sch)}
-                    className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border border-slate-200"
+                    className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Manage Users & Sub-module Rights</span>
+                    <span>Manage Users</span>
                   </button>
 
                   <button
                     onClick={() => handleEnterSchool(sch)}
-                    className="py-2 px-3.5 bg-[#041633] hover:bg-[#072454] text-[#ffa000] font-black text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    className="py-2 px-3 bg-[#041633] hover:bg-[#072454] text-[#ffa000] font-black text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-sm"
                     title="Developer Quick-Switch to this School Portal"
                   >
                     <span>Test School</span>
                     <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    onClick={() => handleOpenDeleteModal(sch)}
+                    className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition cursor-pointer border border-rose-200"
+                    title="Delete School & All Tenant Data"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -1506,6 +1544,104 @@ export default function DeveloperSchoolManager() {
                   </div>
                 </form>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 6. MODAL: CONFIRM PERMANENT DELETE SCHOOL & ALL DATA */}
+      {/* ========================================================================= */}
+      {schoolToDelete && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl border border-red-200 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-white/20 text-white rounded-xl">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white">Permanently Remove School</h3>
+                  <p className="text-[11px] text-red-100">
+                    High-Risk Action • Irreversible Cascading Deletion
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSchoolToDelete(null)}
+                className="text-white/80 hover:text-white p-1 rounded-lg transition cursor-pointer"
+                disabled={deletingSchool}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs text-red-900 space-y-2">
+                <div className="font-bold flex items-center gap-2 text-red-700">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>Warning: All School Data Will Be Completely Erased!</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-red-800">
+                  Deleting <strong>{schoolToDelete.schoolName}</strong> (<code>{schoolToDelete.schoolCode}</code>) will immediately and permanently erase:
+                </p>
+                <ul className="list-disc list-inside text-[11px] text-red-700 space-y-1 font-medium pl-1">
+                  <li>All enrolled students ({schoolToDelete.studentCount || 0} students)</li>
+                  <li>All faculty and staff records ({schoolToDelete.staffCount || 0} staff)</li>
+                  <li>All fee vouchers, collection receipts, and defaulter records</li>
+                  <li>Complete daily student & staff attendance registers</li>
+                  <li>Official admission documents and inquiries</li>
+                  <li>Academic classes, terms, marks, and expense ledgers</li>
+                  <li>Active WhatsApp gateway sessions & class groups</li>
+                  <li>All system user logins associated with this school</li>
+                </ul>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  Type School Code <span className="text-red-600 font-mono font-black">{schoolToDelete.schoolCode}</span> to confirm:
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                  placeholder={`Type "${schoolToDelete.schoolCode}" here`}
+                  className="w-full px-3.5 py-2.5 border-2 border-slate-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 rounded-xl text-sm font-mono uppercase tracking-wider outline-none"
+                  autoFocus
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSchoolToDelete(null)}
+                  disabled={deletingSchool}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteSchool}
+                  disabled={deleteConfirmText.trim() !== schoolToDelete.schoolCode || deletingSchool}
+                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/30 cursor-pointer"
+                >
+                  {deletingSchool ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Deleting Everything...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      <span>Permanently Delete School</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

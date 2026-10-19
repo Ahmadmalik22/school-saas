@@ -46,9 +46,9 @@ export default function StudentAttendanceReport({ schoolCode }) {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [reportData, setReportData] = useState(null);
   const [schoolProfile, setSchoolProfile] = useState({
-    schoolName: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
-    address: 'PAKISTAN TOWN, ISLAMABAD',
-    affiliation: 'Federal Board (FBISE)',
+    schoolName: '',
+    address: '',
+    affiliation: '',
   });
 
   const reportPrintRef = useRef(null);
@@ -218,7 +218,7 @@ export default function StudentAttendanceReport({ schoolCode }) {
       const margin = 12;
 
       // School & Header Information
-      const schoolName = (schoolProfile.schoolName || 'ISLAMABAD MODEL COLLEGE FOR BOYS').toUpperCase();
+      const schoolName = (schoolProfile.schoolName || 'School Campus').toUpperCase();
       const address = (schoolProfile.address || '').toUpperCase();
       const affiliation = schoolProfile.affiliation ? schoolProfile.affiliation.toUpperCase() : '';
       const principalTitle = schoolProfile.principalTitle || 'Principal';
@@ -441,7 +441,7 @@ export default function StudentAttendanceReport({ schoolCode }) {
           pageHeight - 6
         );
         doc.text(
-          `Generated automatically by Akkhor™ SaaS`,
+          `Generated automatically by EduNexus™ SaaS`,
           pageWidth - margin,
           pageHeight - 6,
           { align: 'right' }

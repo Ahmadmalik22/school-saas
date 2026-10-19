@@ -180,9 +180,12 @@ export const generateClassFee = async (req, res) => {
         const totalPayableWithinDueDate = netMonthlyFee + previousArrears + annualOrOtherCharges + fine;
         const totalPayableAfterDueDate = totalPayableWithinDueDate + lateFine;
 
-        const roll = (student.rollNumber || '00').padStart(2, '0');
-        const rand = Math.floor(100 + Math.random() * 900);
-        const voucherNo = `VCH-${cleanMonth}-${roll}-${rand}`;
+        const roll = (student.rollNumber || '00').replace(/[^0-9]/g, '').padStart(2, '0');
+        const adm = (student.admissionNumber || '').replace(/[^a-zA-Z0-9]/g, '');
+        const uniqueSuffix =
+          Date.now().toString(36).toUpperCase().slice(-4) +
+          Math.random().toString(36).substring(2, 6).toUpperCase();
+        const voucherNo = `VCH-${cleanMonth}-${adm || roll}-${uniqueSuffix}`;
 
         return {
           schoolCode,
@@ -213,8 +216,23 @@ export const generateClassFee = async (req, res) => {
         };
       });
 
-      // Atomic bulk insert (1 single database call instead of 50 individual saves!)
-      insertedVouchers = await FeeVoucher.insertMany(docsToInsert, { ordered: false });
+      // Atomic bulk insert with duplicate key resilience
+      try {
+        insertedVouchers = await FeeVoucher.insertMany(docsToInsert, { ordered: false });
+      } catch (insertErr) {
+        // If duplicate key error happened (E11000), recover gracefully by fetching the inserted documents
+        if (insertErr.code === 11000 || insertErr.writeErrors) {
+          console.warn('Recovered from voucher insertion collision:', insertErr.message);
+          const recovered = await FeeVoucher.find({
+            schoolCode,
+            studentId: { $in: missingIds },
+            monthYear,
+          }).lean();
+          insertedVouchers = recovered;
+        } else {
+          throw insertErr;
+        }
+      }
     }
 
     const allVouchers = [...existingVouchers, ...insertedVouchers];

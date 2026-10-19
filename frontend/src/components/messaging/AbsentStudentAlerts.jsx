@@ -196,13 +196,43 @@ export default function AbsentStudentAlerts({ schoolCode }) {
     socket.on('whatsapp_disconnected', handleDisconnected);
     socket.on('whatsapp_dispatch_progress', handleProgress);
 
+    // Join active school room to ensure events are received
+    if (activeCode) {
+      socket.emit('join_school', activeCode);
+    }
+
     return () => {
       socket.off('whatsapp_qr', handleQr);
       socket.off('whatsapp_connected', handleConnected);
       socket.off('whatsapp_disconnected', handleDisconnected);
       socket.off('whatsapp_dispatch_progress', handleProgress);
     };
-  }, [socket, fetchAbsentStudents]);
+  }, [socket, activeCode, fetchAbsentStudents]);
+
+  // Auto-poll status every 2.5 seconds while QR Modal is open or connecting (Bulletproof fallback)
+  useEffect(() => {
+    if (!isQrModalOpen && !connectingGateway) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get('/messaging/whatsapp-status', {
+          params: { schoolCode: activeCode },
+        });
+        if (res.data?.success && res.data.data?.isConnected) {
+          setGatewayStatus({
+            isConnected: true,
+            phoneNumber: res.data.data.phoneNumber || '',
+            pushName: res.data.data.pushName || '',
+            qrCode: null,
+          });
+          setIsQrModalOpen(false);
+          setConnectingGateway(false);
+        }
+      } catch {}
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isQrModalOpen, connectingGateway, activeCode]);
 
   // Trigger WhatsApp Connect
   const handleConnectWhatsApp = async () => {

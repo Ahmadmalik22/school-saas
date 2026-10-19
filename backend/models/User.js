@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema(
     schoolName: {
       type: String,
       required: true,
-      default: 'Akkhor Developer Platform',
+      default: 'EduNexus Developer Platform',
       trim: true,
     },
 

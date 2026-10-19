@@ -10,6 +10,7 @@ import {
   updateSchoolUser,
   deleteSchoolUser,
   toggleSchoolStatus,
+  deleteSchool,
 } from '../controllers/authController.js';
 import { protect, requireSuperAdmin } from '../middlewares/authMiddleware.js';
 import { loginRateLimiter } from '../middlewares/rateLimiter.js';
@@ -27,6 +28,7 @@ router.get('/me', protect, getMe);
 router.post('/developer/register-school', protect, requireSuperAdmin, registerSchool);
 router.get('/developer/schools', protect, requireSuperAdmin, getAllSchools);
 router.patch('/developer/schools/:schoolCode/status', protect, requireSuperAdmin, toggleSchoolStatus);
+router.delete('/developer/schools/:schoolCode', protect, requireSuperAdmin, deleteSchool);
 
 // Granular Sub-Module Rights User Management (Developer or School Admin)
 router.get('/developer/schools/:schoolCode/users', protect, getSchoolUsers);

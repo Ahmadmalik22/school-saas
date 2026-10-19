@@ -102,40 +102,48 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#020b18] via-[#041633] to-[#072454] flex flex-col justify-center items-center px-4 py-8 select-none font-sans relative overflow-hidden">
-      {/* Decorative Background Glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="min-h-screen bg-gradient-to-br from-[#020b18] via-[#041633] to-[#032247] flex flex-col justify-center items-center px-4 py-8 select-none font-sans relative overflow-hidden">
+      {/* Decorative High-Tech Background Glows */}
+      <div className="absolute top-1/6 left-1/4 w-[28rem] h-[28rem] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000"></div>
+      <div className="absolute bottom-1/6 right-1/4 w-[30rem] h-[30rem] bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 right-10 w-64 h-64 bg-teal-400/5 rounded-full blur-2xl pointer-events-none"></div>
 
       <div className="w-full max-w-md z-10">
-        {/* Brand Card Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3.5 bg-gradient-to-tr from-amber-500 to-amber-400 rounded-2xl shadow-xl shadow-amber-500/20 mb-4 ring-4 ring-amber-500/20">
-            <GraduationCap className="w-9 h-9 text-slate-950" />
+        {/* EduNexus Brand Card Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-b from-[#0b2447] to-[#041633] rounded-2xl shadow-xl shadow-cyan-500/20 mb-3 ring-2 ring-cyan-400/40 backdrop-blur-md">
+            <img
+              src="/edunexus-logo.png"
+              alt="EduNexus Logo"
+              className="w-14 h-14 object-contain drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]"
+            />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight flex items-center justify-center gap-2">
-            <span>Akkhor</span>
-            <span className="text-amber-400 font-extrabold">SaaS</span>
+          <h1 className="text-3xl font-black text-white tracking-tight flex items-center justify-center gap-1.5">
+            <span>Edu</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-500 font-extrabold">Nexus</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 rounded-full ml-1">SaaS</span>
           </h1>
           <p className="text-slate-400 text-xs font-medium mt-1 tracking-wide">
-            Next-Gen Multi-Tenant School ERP & Administrative Suite
+            Intelligent Cloud School ERP & Administrative Operating System
           </p>
         </div>
 
         {/* Main Login Box */}
-        <div className="bg-[#0b1e3f]/90 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl p-7 text-slate-200">
+        <div className="bg-[#07172f]/90 backdrop-blur-xl border border-cyan-500/25 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-7 text-slate-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-800">
             <div>
-              <h2 className="text-lg font-bold text-white">System Sign In</h2>
-              <p className="text-[11px] text-slate-400">Enter your credentials to access your portal</p>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <span>Sign In to Portal</span>
+              </h2>
+              <p className="text-[11px] text-slate-400">Enter your credentials to access your school workspace</p>
             </div>
-            <span className="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-bold rounded-full">
-              Enterprise v2.6
+            <span className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[10px] font-bold rounded-full">
+              Enterprise v3.0
             </span>
           </div>
 
           {error && (
-            <div className="mb-5 p-3.5 bg-red-950/50 border border-red-500/40 rounded-xl flex items-start gap-2.5 text-xs text-red-300">
+            <div className="mb-5 p-3.5 bg-red-950/60 border border-red-500/50 rounded-xl flex items-start gap-2.5 text-xs text-red-200 animate-shake">
               <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">{error}</div>
             </div>
@@ -143,7 +151,7 @@ export default function Login() {
 
           {/* Dynamic School Identity Preview Banner */}
           {previewProfile && (
-            <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-slate-900 border border-amber-500/40 rounded-xl flex items-center gap-3 animate-fadeIn">
+            <div className="mb-5 p-3.5 bg-gradient-to-r from-cyan-500/15 via-blue-500/10 to-slate-900 border border-cyan-500/40 rounded-xl flex items-center gap-3 animate-fadeIn">
               <SchoolLogo
                 logoUrl={previewProfile.logoUrl}
                 schoolName={previewProfile.schoolName}
@@ -153,7 +161,7 @@ export default function Login() {
                 className="shrink-0 shadow-md"
               />
               <div className="min-w-0">
-                <div className="text-xs font-black text-amber-300 uppercase tracking-tight truncate">
+                <div className="text-xs font-black text-cyan-300 uppercase tracking-tight truncate">
                   {previewProfile.schoolName}
                 </div>
                 <div className="text-[10px] text-slate-300 truncate">
@@ -172,7 +180,7 @@ export default function Login() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <School className="w-4 h-4 text-amber-400/80" />
+                  <School className="w-4 h-4 text-cyan-400" />
                 </div>
                 <input
                   type="text"
@@ -180,7 +188,7 @@ export default function Login() {
                   value={formData.schoolCode}
                   onChange={handleChange}
                   placeholder="e.g. SCH-101, BSS-01"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-xs font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40 rounded-xl text-white placeholder-slate-500 text-xs font-mono uppercase tracking-wider outline-none transition"
                 />
               </div>
             </div>
@@ -188,11 +196,11 @@ export default function Login() {
             {/* Email Address */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Email Address <span className="text-amber-400">*</span>
+                Email Address <span className="text-cyan-400">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4 text-amber-400/80" />
+                  <Mail className="w-4 h-4 text-cyan-400" />
                 </div>
                 <input
                   type="email"
@@ -200,8 +208,8 @@ export default function Login() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="admin@school.edu.pk or developer@akkhor.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
+                  placeholder="admin@school.edu.pk or developer@edunexus.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40 rounded-xl text-white placeholder-slate-500 text-xs outline-none transition"
                 />
               </div>
             </div>
@@ -209,11 +217,11 @@ export default function Login() {
             {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Password <span className="text-amber-400">*</span>
+                Password <span className="text-cyan-400">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4 text-amber-400/80" />
+                  <Lock className="w-4 h-4 text-cyan-400" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -222,12 +230,12 @@ export default function Login() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-900/90 border border-slate-700 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40 rounded-xl text-white placeholder-slate-500 text-xs outline-none transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-cyan-300 transition cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -238,7 +246,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-2.5 px-4 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black rounded-xl text-xs tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer transition transform active:scale-[0.99] disabled:opacity-50"
+              className="w-full mt-2 py-2.5 px-4 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black rounded-xl text-xs tracking-wide shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer transition transform active:scale-[0.99] disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -256,7 +264,7 @@ export default function Login() {
 
           {/* Quick Demo Credentials Panel */}
           <div className="mt-6 pt-5 border-t border-slate-800">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-400 mb-2.5 uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-cyan-400 mb-2.5 uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Quick 1-Click Demo Accounts</span>
             </div>
@@ -264,21 +272,21 @@ export default function Login() {
               {/* 1. Developer */}
               <button
                 type="button"
-                onClick={() => handleQuickFill('SYSTEM', 'developer@akkhor.com', 'dev123456')}
-                className="w-full text-left p-2.5 bg-slate-900/70 hover:bg-slate-800/90 border border-slate-700/60 rounded-xl transition cursor-pointer flex items-center justify-between group"
+                onClick={() => handleQuickFill('SYSTEM', 'developer@edunexus.com', 'dev123456')}
+                className="w-full text-left p-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-cyan-500/40 rounded-xl transition cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-amber-500/20 text-amber-400 rounded-lg group-hover:bg-amber-500 group-hover:text-slate-950 transition">
+                  <div className="p-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg group-hover:bg-cyan-500 group-hover:text-slate-950 transition">
                     <ShieldCheck className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white group-hover:text-amber-400 transition">
+                    <div className="text-xs font-bold text-white group-hover:text-cyan-300 transition">
                       Master Developer (Super Admin)
                     </div>
-                    <div className="text-[10px] text-slate-400">developer@akkhor.com • All Schools Control</div>
+                    <div className="text-[10px] text-slate-400">developer@edunexus.com • All Schools Control</div>
                   </div>
                 </div>
-                <span className="text-[10px] text-amber-400/80 font-mono bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
                   Full SaaS
                 </span>
               </button>
@@ -287,14 +295,14 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => handleQuickFill('SCH-101', 'admin@imcb.edu.pk', 'admin123')}
-                className="w-full text-left p-2.5 bg-slate-900/70 hover:bg-slate-800/90 border border-slate-700/60 rounded-xl transition cursor-pointer flex items-center justify-between group"
+                className="w-full text-left p-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-blue-500/40 rounded-xl transition cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-500 group-hover:text-slate-950 transition">
                     <Building className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white group-hover:text-blue-400 transition">
+                    <div className="text-xs font-bold text-white group-hover:text-blue-300 transition">
                       Principal Admin (SCH-101 IMCB)
                     </div>
                     <div className="text-[10px] text-slate-400">admin@imcb.edu.pk • All Campus Modules</div>
@@ -309,14 +317,14 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => handleQuickFill('BPHS', 'ahmimalik.2811@gmail.com', '123456')}
-                className="w-full text-left p-2.5 bg-slate-900/70 hover:bg-slate-800/90 border border-slate-700/60 rounded-xl transition cursor-pointer flex items-center justify-between group"
+                className="w-full text-left p-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-cyan-500/40 rounded-xl transition cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-1.5 bg-amber-500/20 text-amber-400 rounded-lg group-hover:bg-amber-500 group-hover:text-slate-950 transition">
                     <Building className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white group-hover:text-amber-400 transition">
+                    <div className="text-xs font-bold text-white group-hover:text-amber-300 transition">
                       Bright Moon Public High School (BPHS)
                     </div>
                     <div className="text-[10px] text-slate-400">ahmimalik.2811@gmail.com • Uploaded Logo</div>
@@ -331,14 +339,14 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => handleQuickFill('BSS-01', 'principal@bss.edu.pk', 'admin123')}
-                className="w-full text-left p-2.5 bg-slate-900/70 hover:bg-slate-800/90 border border-slate-700/60 rounded-xl transition cursor-pointer flex items-center justify-between group"
+                className="w-full text-left p-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/40 rounded-xl transition cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg group-hover:bg-emerald-500 group-hover:text-slate-950 transition">
                     <UserCheck className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition">
+                    <div className="text-xs font-bold text-white group-hover:text-emerald-300 transition">
                       Beaconhouse Principal (BSS-01)
                     </div>
                     <div className="text-[10px] text-slate-400">principal@bss.edu.pk • Cambridge & FBISE</div>
@@ -353,8 +361,10 @@ export default function Login() {
         </div>
 
         {/* Footer info */}
-        <div className="text-center mt-6 text-slate-500 text-[11px]">
-          Akkhor Education Technology • Enterprise Multi-Tenant Architecture
+        <div className="text-center mt-6 text-slate-400 text-[11px] flex items-center justify-center gap-1.5">
+          <span>EduNexus Education Technology</span>
+          <span>•</span>
+          <span className="text-cyan-400 font-medium">Enterprise Cloud School ERP</span>
         </div>
       </div>
     </div>

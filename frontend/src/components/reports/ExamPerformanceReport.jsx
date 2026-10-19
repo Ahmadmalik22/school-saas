@@ -43,9 +43,9 @@ export default function ExamPerformanceReport({ schoolCode }) {
   const [reportData, setReportData] = useState(null);
   const [termsList, setTermsList] = useState([]);
   const [schoolProfile, setSchoolProfile] = useState({
-    schoolName: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
-    address: 'PAKISTAN TOWN, ISLAMABAD',
-    affiliation: 'Federal Board (FBISE)',
+    schoolName: '',
+    address: '',
+    affiliation: '',
     principalTitle: 'Principal',
   });
 
@@ -277,7 +277,7 @@ export default function ExamPerformanceReport({ schoolCode }) {
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 12;
 
-      const schoolName = (schoolProfile.schoolName || 'ISLAMABAD MODEL COLLEGE FOR BOYS').toUpperCase();
+      const schoolName = (schoolProfile.schoolName || 'School Campus').toUpperCase();
       const address = (schoolProfile.address || '').toUpperCase();
       const affiliation = schoolProfile.affiliation ? schoolProfile.affiliation.toUpperCase() : '';
       const principalTitle = schoolProfile.principalTitle || 'Principal';
@@ -474,7 +474,7 @@ export default function ExamPerformanceReport({ schoolCode }) {
           pageHeight - 6
         );
         doc.text(
-          `Generated automatically by Akkhor™ SaaS`,
+          `Generated automatically by EduNexus™ SaaS`,
           pageWidth - margin,
           pageHeight - 6,
           { align: 'right' }

@@ -28,8 +28,8 @@ export default function FinancialSummaryReport({ schoolCode }) {
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState(null);
   const [schoolProfile, setSchoolProfile] = useState({
-    schoolName: 'ISLAMABAD MODEL COLLEGE FOR BOYS',
-    address: 'PAKISTAN TOWN, ISLAMABAD',
+    schoolName: '',
+    address: '',
   });
 
   useEffect(() => {

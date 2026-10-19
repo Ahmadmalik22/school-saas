@@ -7,6 +7,17 @@ import { AcademicClass } from '../models/AcademicClass.js';
 import AcademicSession from '../models/AcademicSession.js';
 import ExamTerm from '../models/ExamTerm.js';
 import ExpenseCategory from '../models/ExpenseCategory.js';
+import StudentAttendance from '../models/StudentAttendance.js';
+import StaffAttendance from '../models/StaffAttendance.js';
+import FeeVoucher from '../models/FeeVoucher.js';
+import StaffSalary from '../models/StaffSalary.js';
+import Expense from '../models/Expense.js';
+import ClassSubject from '../models/ClassSubject.js';
+import StudentExamMarks from '../models/StudentExamMarks.js';
+import AdmissionInquiry from '../models/AdmissionInquiry.js';
+import ClassWhatsAppGroup from '../models/ClassWhatsAppGroup.js';
+import SchoolWhatsAppSession from '../models/SchoolWhatsAppSession.js';
+import { disconnectSession } from '../services/whatsappGateway.js';
 
 import { ALL_SUBMODULE_KEYS, ROLE_PRESETS, SYSTEM_MODULES } from '../config/moduleCatalog.js';
 
@@ -43,20 +54,25 @@ const generateToken = (user) => {
 export const ensureDeveloperAndDefaultAccounts = async () => {
   try {
     // 1. Master Developer Account
-    const devExists = await User.findOne({ role: 'SUPER_ADMIN' });
-    if (!devExists) {
-      const dev = new User({
+    let dev = await User.findOne({ role: 'SUPER_ADMIN' });
+    if (!dev) {
+      dev = new User({
         name: 'Master Developer',
-        email: 'developer@akkhor.com',
+        email: 'developer@edunexus.com',
         password: 'dev123456',
         role: 'SUPER_ADMIN',
         schoolCode: 'SYSTEM',
-        schoolName: 'Akkhor SaaS Developer Platform',
+        schoolName: 'EduNexus SaaS Developer Platform',
         permissions: ALL_SUBMODULE_KEYS,
         isActive: true,
       });
       await dev.save();
-      console.log('✅ Master Developer Account provisioned: developer@akkhor.com / dev123456');
+      console.log('✅ Master Developer Account provisioned: developer@edunexus.com / dev123456');
+    } else {
+      if (dev.schoolName && dev.schoolName.includes('Akkhor')) {
+        dev.schoolName = 'EduNexus SaaS Developer Platform';
+        await dev.save();
+      }
     }
 
     // 2. Default School SCH-101 Profile & Admin
@@ -111,7 +127,13 @@ export const login = async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     let query = { email: cleanEmail };
 
-    if (schoolCode && schoolCode.trim().toUpperCase() !== 'SYSTEM') {
+    // Seamless support for Master Developer with edunexus or akkhor domain
+    if (cleanEmail === 'developer@edunexus.com' || cleanEmail === 'developer@akkhor.com') {
+      const devUser = await User.findOne({ role: 'SUPER_ADMIN' });
+      if (devUser) {
+        query = { _id: devUser._id };
+      }
+    } else if (schoolCode && schoolCode.trim().toUpperCase() !== 'SYSTEM') {
       query.schoolCode = schoolCode.trim().toUpperCase();
     }
 
@@ -674,5 +696,82 @@ export const toggleSchoolStatus = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// =========================================================================
+// 11. DELETE SCHOOL & CASCADE ALL ASSOCIATED TENANT DATA (Developer Only)
+// =========================================================================
+export const deleteSchool = async (req, res) => {
+  try {
+    const { schoolCode } = req.params;
+    if (!schoolCode) {
+      return res.status(400).json({ success: false, message: 'School code is required.' });
+    }
+
+    const cleanCode = schoolCode.toUpperCase().trim();
+
+    if (cleanCode === 'SYSTEM') {
+      return res.status(400).json({
+        success: false,
+        message: 'Master Developer SYSTEM context cannot be deleted.',
+      });
+    }
+
+    const school = await SchoolProfile.findOne({ schoolCode: cleanCode });
+    if (!school) {
+      return res.status(404).json({ success: false, message: `School [${cleanCode}] not found.` });
+    }
+
+    const schoolName = school.schoolName || cleanCode;
+
+    // Disconnect active WhatsApp socket & clear stored session files
+    try {
+      await disconnectSession(cleanCode, req.io);
+    } catch (e) {
+      console.warn(`WhatsApp disconnect warning for [${cleanCode}]:`, e.message);
+    }
+
+    // Cascade delete across all school-linked collections
+    await Promise.allSettled([
+      SchoolProfile.deleteOne({ schoolCode: cleanCode }),
+      User.deleteMany({ schoolCode: cleanCode, role: { $ne: 'SUPER_ADMIN' } }),
+      Student.deleteMany({ schoolCode: cleanCode }),
+      Staff.deleteMany({ schoolCode: cleanCode }),
+      StudentAttendance.deleteMany({ schoolCode: cleanCode }),
+      StaffAttendance.deleteMany({ schoolCode: cleanCode }),
+      FeeVoucher.deleteMany({ schoolCode: cleanCode }),
+      StaffSalary.deleteMany({ schoolCode: cleanCode }),
+      Expense.deleteMany({ schoolCode: cleanCode }),
+      ExpenseCategory.deleteMany({ schoolCode: cleanCode }),
+      AcademicClass.deleteMany({ schoolCode: cleanCode }),
+      AcademicSession.deleteMany({ schoolCode: cleanCode }),
+      ClassSubject.deleteMany({ schoolCode: cleanCode }),
+      ExamTerm.deleteMany({ schoolCode: cleanCode }),
+      StudentExamMarks.deleteMany({ schoolCode: cleanCode }),
+      AdmissionInquiry.deleteMany({ schoolCode: cleanCode }),
+      ClassWhatsAppGroup.deleteMany({ schoolCode: cleanCode }),
+      SchoolWhatsAppSession.deleteMany({ schoolCode: cleanCode }),
+    ]);
+
+    // Emit real-time notification to developer hub & school channel
+    if (req.io) {
+      req.io.to(`school:${cleanCode}`).emit('school_terminated', {
+        schoolCode: cleanCode,
+        message: `School [${cleanCode}] has been removed by the system administrator.`,
+      });
+      req.io.to('role:SUPER_ADMIN').emit('all_schools_updated');
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `School "${schoolName}" [${cleanCode}] and all its associated data (students, staff, fees, attendance, and users) have been permanently deleted.`,
+    });
+  } catch (error) {
+    console.error('Error deleting school:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to delete school.',
+    });
   }
 };

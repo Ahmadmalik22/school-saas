@@ -344,7 +344,7 @@ export default function SchoolBrandingModal({ isOpen, onClose }) {
                 value={formData.schoolName}
                 onChange={handleChange}
                 required
-                placeholder="e.g. ISLAMABAD MODEL COLLEGE FOR BOYS"
+                placeholder="e.g. THE EDUCATORS / OXFORD GRAMMAR SCHOOL"
                 className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
